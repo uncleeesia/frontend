@@ -6,7 +6,7 @@ function App() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    axios.get("https://sim-assignment-csit314-9e613de15308.herokuapp.com//")
+    axios.get("https://sim-assignment-csit314-9e613de15308.herokuapp.com/")
       .then(res => setMessage(res.data.message))
       .catch(err => console.error(err));
   }, []);
