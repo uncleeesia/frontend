@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 const Header = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    // const [isLoggedIn, setIsLoggedIn] = useState(false);
     return (
         <nav>
             <h1>Welcome to the App</h1>
