@@ -7,7 +7,7 @@ function App() {
 
   useEffect(() => {
     axios.get("https://sim-assignment-csit314-9e613de15308.herokuapp.com/")
-      .then(data => setMessage(data.message))
+      .then(res => setMessage(res.data.message))
       .catch(err => console.error(err));
   }, []);
 
