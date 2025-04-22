@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Header from "./components/Header";
+import Header from "./components/Header/Header";
 import axios from "axios";
 
 function App() {
