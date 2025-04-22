@@ -15,8 +15,9 @@ const Header = () => (
   </div>
 );
 
-Header.propTypes = {};
+// comment variables when not in use
+// Header.propTypes = {};
 
-Header.defaultProps = {};
+// Header.defaultProps = {};
 
 export default Header;
