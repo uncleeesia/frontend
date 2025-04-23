@@ -1,0 +1,18 @@
+.ProfileAvatar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem;
+}
+
+.AvatarImage {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: absolute;
+  transform:translateX(-120%) translateY(-65%);
+}
+
+.ProfileAvatar a {
+  text-decoration: none;
+}
