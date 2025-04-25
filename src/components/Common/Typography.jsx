@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Typography = ({ variant = "p", children, className }) => {
+const Typography = ({ variant = "p", children, className}) => {
   const variants = {
     h1: "text-4xl font-heading mb-4",
     h2: "text-3xl font-heading mb-3",

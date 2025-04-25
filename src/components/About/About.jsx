@@ -1,15 +1,19 @@
-import React from 'react';
-import styles from './About.module.css';
+import React from "react";
+import styles from "./About.module.css";
+import Typography from "../Common/Typography";
 
 const About = () => (
   <div className={styles.About}>
-    <h1>About Us</h1>
+    <Typography variant="h1">About Us</Typography>
     <section className={styles.Mission}>
-      <h2>Our Mission</h2>
-      <p>To provide exceptional cleaning services that exceed our customers' expectations.</p>
+      <Typography variant="h2">Our Mission</Typography>
+      <Typography>
+        To provide exceptional cleaning services that exceed our customers'
+        expectations.
+      </Typography>
     </section>
     <section className={styles.Values}>
-      <h2>Our Values</h2>
+      <Typography variant="h2">Our Values</Typography>
       <ul>
         <li>Integrity</li>
         <li>Commitment to Excellence</li>
@@ -17,8 +21,10 @@ const About = () => (
       </ul>
     </section>
     <section className={styles.SocialProof}>
-      <h2>What Our Customers Say</h2>
-      <blockquote>"Best cleaning service ever! Highly recommend!" - Jane Doe</blockquote>
+      <Typography variant="h2">What Our Customers Say</Typography>
+      <Typography variant="blockquote">
+        "Best cleaning service ever! Highly recommend!" - Jane Doe
+      </Typography>
     </section>
   </div>
 );
