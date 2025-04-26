@@ -82,7 +82,7 @@ const App = () => {
             variant="image"
             title="Image Card"
             content="Card with image"
-            image="https://images.unsplash.com/photo-1682687220742-aba19b11adf417"
+            image="https://placehold.co/600x400"
           />
           <Card
             variant="hover"

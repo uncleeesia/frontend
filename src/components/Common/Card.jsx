@@ -1,32 +1,44 @@
 import React from "react";
 
+const baseStyles = "rounded-lg transition-all duration-300 bg-white";
+  const variantStyles = {
+    basic: "p-4 shadow-sm hover:shadow-md",
+  image: "overflow-hidden shadow-sm hover:shadow-md",
+    hover: "p-4 transform hover:-translate-y-1 hover:shadow-lg",
+    clickable: "p-4 cursor-pointer active:scale-95 hover:shadow-lg",
+  };
+
 const Card = ({
   variant = "basic",
   image,
   title,
   content,
   onClick,
-  className,
+  className = "",
 }) => {
-  const baseStyles = "rounded-lg transition-all duration-300 bg-card";
-  const variantStyles = {
-    basic: "p-4 shadow-sm hover:shadow-md",
-    image: "overflow-hidden",
-    hover: "p-4 transform hover:-translate-y-1 hover:shadow-lg",
-    clickable: "p-4 cursor-pointer active:scale-95 hover:shadow-lg",
-  };
+  const rootClasses = [
+    baseStyles,
+    variantStyles[variant] || variantStyles.basic,
+    className,
+  ].join(" ");
+
+  const clickableProps =
+    variant === "clickable" && onClick
+      ? { role: "button", tabIndex: 0, onClick }
+      : { onClick };
 
   return (
-    <div
-      className={`${baseStyles} ${variantStyles[variant]} ${className || ""}`}
-      onClick={onClick}
-    >
+    <div className={rootClasses} {...clickableProps}>
       {variant === "image" && image && (
-        <img src={image} alt={title} className="w-full h-48 object-cover" />
+        <img
+          src={image}
+          alt={title || "Card image"}
+          className="w-full h-48 object-cover"
+        />
       )}
       <div className={variant === "image" ? "p-4" : ""}>
         {title && <h3 className="text-lg font-heading mb-2">{title}</h3>}
-        {content && <p className="text-accent">{content}</p>}
+        {content && <p className="text-blue-600">{content}</p>}
       </div>
     </div>
   );
