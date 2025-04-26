@@ -1,27 +1,98 @@
-import React from "react";
-import styles from "./Header.module.css";
-import Typography from "../Common/Typography";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-const Header = () => (
-  <div className={styles.Header}>
-    <nav>
-      <Typography variant="h1">Cleaning Haul</Typography>
-      <ul>
-        <li>
-          <a href="/">Home</a>
-        </li>
-        <li>
-          <a href="/about">About</a>
-        </li>
-        <li>
-          <a href="/contact">Contact</a>
-        </li>
-        <li>
-          <a href="/login">Login</a>
-        </li>
-      </ul>
-    </nav>
-  </div>
-);
+const Header = () => {
+const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("email"));
+  const [isLoginPage, setIsLoginPage] = useState(
+    window.location.pathname === "/login"
+  );
+
+  useEffect(() => {
+    const syncLogin = () => setIsLoggedIn(!!localStorage.getItem("email"));
+    window.addEventListener("storage", syncLogin);
+    return () => window.removeEventListener("storage", syncLogin);
+  }, []);
+
+  useEffect(() => {
+    const checkPath = () =>
+      setIsLoginPage(window.location.pathname === "/login");
+    window.addEventListener("popstate", checkPath);
+
+    const origPushState = window.history.pushState;
+    window.history.pushState = function (...args) {
+      origPushState.apply(this, args);
+      checkPath();
+    };
+
+    checkPath();
+    return () => {
+      window.removeEventListener("popstate", checkPath);
+      window.history.pushState = origPushState;
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("email");
+    setIsLoggedIn(false);
+    navigate("/login");
+  };
+
+  return (
+    <header className="w-full bg-white shadow p-4 flex justify-between items-center">
+      <div className="font-bold text-xl text-blue-700">Cleaning Haul</div>
+      <nav>
+        <ul className="flex gap-6 items-center list-none">
+          <li className="list-none">
+            <a
+              href="/"
+              className="font-medium text-gray-600 hover:text-blue-600"
+            >
+              Home
+            </a>
+          </li>
+          <li className="list-none">
+            <a
+              href="/about"
+              className="font-medium text-gray-600 hover:text-blue-600"
+            >
+              About
+            </a>
+          </li>
+          <li className="list-none">
+            <a
+              href="/contact"
+              className="font-medium text-gray-600 hover:text-blue-600"
+            >
+              Contact
+            </a>
+          </li>
+
+          {/* Show Logout if logged in and not on /login, else show Login if not logged in and not on /login */}
+          {!isLoginPage &&
+            (isLoggedIn ? (
+              <li className="list-none">
+                <button
+                  onClick={handleLogout}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                >
+                  Logout
+                </button>
+              </li>
+            ) : (
+              <li className="list-none">
+                <a
+                  href="/login"
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                >
+                  Login
+                </a>
+              </li>
+            ))}
+        </ul>
+      </nav>
+    </header>
+  );
+};
 
 export default Header;

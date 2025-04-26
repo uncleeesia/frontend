@@ -7,12 +7,28 @@ import Button from "../Button";
 import Card from "../Card";
 import ServiceCard from "../ServiceCard";
 import ReviewCard from "../ReviewCard";
+import Modal from "../Modal";
 
 const App = () => {
+  const [showPreferences, setShowPreferences] = useState(false);
+
+  useEffect(() => {
+    if (false) {
+      setShowPreferences(true);
+    }
+  }, []);
+  const handleSavePreferences = (preferences) => {
+    setShowPreferences(false);
+  };
+
   return (
     <div className="p-8">
       <Typography variant="h1">Showcase</Typography>
-
+      <Modal
+        isOpen={showPreferences}
+        onClose={() => setShowPreferences(false)}
+        onSave={handleSavePreferences}
+      />
       <section className="mb-8">
         <Typography variant="h2">Featured Services</Typography>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

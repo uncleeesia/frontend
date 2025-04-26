@@ -6,10 +6,21 @@ import { BsApple, BsGoogle } from "react-icons/bs";
 import { FaXTwitter } from "react-icons/fa6";
 import Typography from "../Common/Typography";
 import Button from "../Common/Button";
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const [email, setEmail] = useState(undefined);
+  const [password, setPassword] = useState(undefined);
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
   const togglePasswordView = () => setShowPassword(!showPassword);
+  const handleSubmit = (e) => {
+    e.preventDefault(); // prevents the page from refreshing
+    console.log("Form submitted:", email);
+    console.log("Form submitted:", password);
+    localStorage.setItem("email", email);
+    navigate('/');
+  };
 
   return (
     <div className="w-full h-150 flex items-center justify-center">
@@ -21,11 +32,12 @@ const Login = () => {
           Don't have an account? <span className="text-white">Sign up</span>
         </Typography>
 
-        <div className="w-full flex flex-col gap-3">
+        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-3">
           <div className="w-full flex items-center gap-2 bg-gray-500 p-2 rounded-xl">
             <MdAlternateEmail />
             <input
               type="email"
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Email address"
               className="bg-transparent border-0 w-full outline-none text-sm md:text-base"
             />
@@ -36,6 +48,7 @@ const Login = () => {
             <input
               type={showPassword ? "password" : "text"}
               placeholder="Password"
+              onChange={(e) => setPassword(e.target.value)}
               className="bg-transparent border-0 w-full outline-none text-sm md:text-base"
             />
             {showPassword ? (
@@ -50,9 +63,10 @@ const Login = () => {
               />
             )}
           </div>
-        </div>
-
-        <Button variant="primary">Login</Button>
+          <Button type="submit" variant="primary">
+            Login
+          </Button>
+        </form>
 
         <div className="relative w-full flex items-center justify-center py-3">
           <div className="w-2/5 h-[2px] bg-gray-500"></div>
