@@ -2,35 +2,16 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
-const navigate = useNavigate();
+  const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("email"));
   const [isLoginPage, setIsLoginPage] = useState(
     window.location.pathname === "/login"
   );
 
   useEffect(() => {
-    const syncLogin = () => setIsLoggedIn(!!localStorage.getItem("email"));
-    window.addEventListener("storage", syncLogin);
-    return () => window.removeEventListener("storage", syncLogin);
   }, []);
 
-  useEffect(() => {
-    const checkPath = () =>
-      setIsLoginPage(window.location.pathname === "/login");
-    window.addEventListener("popstate", checkPath);
-
-    const origPushState = window.history.pushState;
-    window.history.pushState = function (...args) {
-      origPushState.apply(this, args);
-      checkPath();
-    };
-
-    checkPath();
-    return () => {
-      window.removeEventListener("popstate", checkPath);
-      window.history.pushState = origPushState;
-    };
-  }, []);
+  useEffect(() => {}, []);
 
   const handleLogout = () => {
     localStorage.removeItem("email");
@@ -68,7 +49,6 @@ const navigate = useNavigate();
             </a>
           </li>
 
-          {/* Show Logout if logged in and not on /login, else show Login if not logged in and not on /login */}
           {!isLoginPage &&
             (isLoggedIn ? (
               <li className="list-none">
