@@ -3,14 +3,14 @@ import { FiSearch, FiEye, FiEyeOff } from "react-icons/fi";
 
 const Input = ({ type = "text", label, error, icon, ...props }) => {
   const [showPassword, setShowPassword] = useState(false);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState();
 
   const handleChange = (e) => {
     setValue(e.target.value);
   };
 
   return (
-    <div className="mb-4">
+    <div className="mb-10">
       {label && (
         <label className="block text-sm font-body mb-1 text-foreground">
           {label}

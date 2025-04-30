@@ -10,12 +10,10 @@ import Showcase from "./components/Common/Showcase/Showcase";
 import axios from "axios";
 
 function App() {
-  const [message, setMessage] = useState("");
-
   useEffect(() => {
     axios
       .get("https://sim-assignment-csit314-9e613de15308.herokuapp.com/")
-      .then((res) => setMessage(res.data.message))
+      .then((res) => console.log(res.data.message))
       .catch((err) => console.error(err));
   }, []);
 
@@ -30,6 +28,7 @@ function App() {
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/showcase" element={<Showcase />} />
+          <Route path="/service-details" element={<Showcase />} />
         </Routes>
       </div>
     </Router>

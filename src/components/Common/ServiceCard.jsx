@@ -1,10 +1,30 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FaStar } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-const ServiceCard = ({ title, price, description, rating, reviews, image }) => {
+const ServiceCard = ({
+  title,
+  price,
+  description,
+  rating,
+  reviews,
+  image,
+  additionalClass,
+}) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate("/service-details");
+  };
+  
   return (
-    <div className="rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 bg-card">
-      <img src={image} alt={title} className="w-full h-48 object-cover" />
+    <div
+      onClick={handleClick}
+      className={`rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 bg-card ${
+        additionalClass || ""
+      }`}
+    >
+      <img src={image} alt={title} className="w-full h-70 object-cover" />
       <div className="p-4">
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-lg font-heading">{title}</h3>
