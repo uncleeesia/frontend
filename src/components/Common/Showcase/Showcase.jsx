@@ -8,6 +8,8 @@ import Card from "../Card";
 import ServiceCard from "../ServiceCard";
 import ReviewCard from "../ReviewCard";
 import Modal from "../Modal";
+import Checkbox from "../Checkbox";
+import Radio from "../Radio";
 
 const App = () => {
   const [showPreferences, setShowPreferences] = useState(false);
@@ -148,6 +150,25 @@ const App = () => {
         </div>
       </section>
 
+      <section className="mb-8">
+        <Typography variant="h2">Form Controls</Typography>
+        <div className="max-w-md space-y-4">
+          <Checkbox label="Accept terms and conditions" onChange={(checked) => console.log(checked)} />
+          <Checkbox label="Subscribe to newsletter" defaultChecked />
+          <div className="space-y-2">
+            <Radio 
+              name="options"
+              options={[
+                { value: "1", label: "Option 1" },
+                { value: "2", label: "Option 2" },
+                { value: "3", label: "Option 3", disabled: true }
+              ]}
+              onChange={(value) => console.log(value)}
+            />
+          </div>
+        </div>
+      </section>
+      
       <section className="mb-8">
         <Typography variant="h2">Typography</Typography>
         <Typography variant="h1">Heading 1</Typography>

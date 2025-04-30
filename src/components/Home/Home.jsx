@@ -1,57 +1,84 @@
 import React, { useEffect, useState } from "react";
-import styles from "./Home.module.css";
 import Typography from "../Common/Typography";
 import Input from "../Common/Input";
 import axios from "axios";
 import Modal from "../Common/Modal";
 import ServiceCard from "../Common/ServiceCard";
+import Card from "../Common/Card";
 
 const Home = () => {
-  const [preferences, setPreferences] = useState(true);
+  const [preferences, setPreferences] = useState();
   const [showPreferences, setShowPreferences] = useState(false);
   const [allServices, setAllServices] = useState([]);
   const [preferredServices, setPreferredServices] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
 
   //assuming i am first time logging in
-  // fetch("https://sim-assignment-csit314-9e613de15308.herokuapp.com/api/getPreferences")
   useEffect(() => {
+    // fetch("https://sim-assignment-csit314-9e613de15308.herokuapp.com/api/getPreferences")
     axios
       .get("http://127.0.0.1:5000/api/getPreferences")
-      .then((response) => {
-        setPreferences(response.data.preferences);
+      .then((Prefresponse) => {
+        setPreferences(Prefresponse.data.preferences);
+        console.log(Prefresponse.data.preferences);
         //to change to dynamic to fit the condition
-        if (!response.data.preferences.id) {
-          setShowPreferences(true);
-        }else if (response.data.preferences.id) {
-          setShowPreferences(false);
-        }
-        console.log(response.data.preferences)
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-    // fetch("https://sim-assignment-csit314-9e613de15308.herokuapp.com/api/getServices")
-    axios
-      .get("http://127.0.0.1:5000/api/getServices")
-      .then((response) => {
-        setFilteredServices(response.data.services);
-        setAllServices(response.data.services);
+
+        // fetch("https://sim-assignment-csit314-9e613de15308.herokuapp.com/api/getServices")
+        axios
+          .get("http://127.0.0.1:5000/api/getServices")
+          .then((response) => {
+            setFilteredServices(response.data.services);
+            setAllServices(response.data.services);
+            console.log(response.data.services);
+            if (!Prefresponse.data.preferences.id) {
+              setShowPreferences(true);
+            } else if (Prefresponse.data.preferences.id) {
+              setShowPreferences(false);
+              setPreferences(Prefresponse.data.preferences);
+              searchPreferenceService(
+                Prefresponse.data.preferences,
+                response.data.services
+              );
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching data:", error);
+          });
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
   }, []);
 
+  const searchPreferenceService = (preferences, services) => {
+    const matchedServices = services
+      .filter((service) => {
+        const matchesRating =
+          (preferences.rating4 && service.rating >= 4) ||
+          (preferences.rating5 && service.rating === 5);
+
+        const matchesReviews =
+          (preferences.reviews50 && service.reviews >= 50) ||
+          (preferences.reviews200 && service.reviews >= 200);
+
+        const matchesBudget =
+          (preferences.budgetLow && service.price < 30) ||
+          (preferences.budgetMid &&
+            service.price >= 30 &&
+            service.price <= 40) ||
+          (preferences.budgetHigh && service.price > 40);
+
+        return matchesRating || matchesReviews || matchesBudget;
+      })
+      .slice(0, 3);
+
+    setPreferredServices(matchedServices);
+  };
+
   const handleSavePreferences = (preferences) => {
     //some api call to backend to save preferences
     setShowPreferences(false);
-    const matchedServices = allServices.filter((service) => {
-      console.log(service)
-      return service.rating > preferences.rating;
-    });
-    //some logic
-    setPreferredServices(matchedServices);
+    searchPreferenceService(preferences);
     window.location.reload();
   };
 
@@ -70,23 +97,26 @@ const Home = () => {
         isOpen={showPreferences}
         onClose={() => setShowPreferences(false)}
         onSave={handleSavePreferences}
+        preferences={preferences}
       />
       <Typography variant="h1">Welcome to the Cleaning Service App</Typography>
       <Input type="search" placeholder="Search..." onChange={handleSearch} />
-      <div className="flex">
-        {preferredServices.map((services, i) => (
-          <ServiceCard
-            additionalClass="w-90"
-            key={services.id}
-            title={services.name}
-            price={services.price}
-            description={services.description}
-            rating={services.rating}
-            reviews={services.reviews}
-            image={services.image}
-          />
-        ))}
+      <Typography variant="h3">Services Based On Preference</Typography>
+      <div className="flex justify-around">
+        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {preferredServices.map((services, i) => (
+            <Card
+              additionalClass="w-70 mb-5"
+              key={services.id}
+              image="https://placehold.co/600x400"
+              variant="image"
+              title={services.name}
+              content={services.description}
+            />
+          ))}
+        </div>
       </div>
+      <Typography variant="h3">All Services</Typography>
       <div className="flex justify-center">
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
           {filteredServices.map((services, i) => (

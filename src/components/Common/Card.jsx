@@ -1,12 +1,13 @@
 import React from "react";
+import Typography from "./Typography";
 
 const baseStyles = "rounded-lg transition-all duration-300 bg-white";
-  const variantStyles = {
-    basic: "p-4 shadow-sm hover:shadow-md",
+const variantStyles = {
+  basic: "p-4 shadow-sm hover:shadow-md",
   image: "overflow-hidden shadow-sm hover:shadow-md",
-    hover: "p-4 transform hover:-translate-y-1 hover:shadow-lg",
-    clickable: "p-4 cursor-pointer active:scale-95 hover:shadow-lg",
-  };
+  hover: "p-4 transform hover:-translate-y-1 hover:shadow-lg",
+  clickable: "p-4 cursor-pointer active:scale-95 hover:shadow-lg",
+};
 
 const Card = ({
   variant = "basic",
@@ -37,8 +38,8 @@ const Card = ({
         />
       )}
       <div className={variant === "image" ? "p-4" : ""}>
-        {title && <h3 className="text-lg font-heading mb-2">{title}</h3>}
-        {content && <p className="text-blue-600">{content}</p>}
+        {title && <Typography variant="h3">{title}</Typography>}
+        {content && <Typography variant="p">{content}</Typography>}
       </div>
     </div>
   );
