@@ -8,11 +8,14 @@ import UserProfile from "./components/UserProfile/UserProfile";
 import Login from "./components/Login/Login";
 import Showcase from "./components/Common/Showcase/Showcase";
 import axios from "axios";
+import ServiceDetail from "./components/ServiceDetail/ServiceDetail";
+const port = import.meta.env.PORT || `http://127.0.0.1:5000/`;
+
 
 function App() {
   useEffect(() => {
     axios
-      .get("https://sim-assignment-csit314-9e613de15308.herokuapp.com/")
+      .get(`${port}`)
       .then((res) => console.log(res.data.message))
       .catch((err) => console.error(err));
   }, []);
@@ -28,7 +31,7 @@ function App() {
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/showcase" element={<Showcase />} />
-          <Route path="/service-details" element={<Showcase />} />
+          <Route path="/service-details" element={<ServiceDetail />} />
         </Routes>
       </div>
     </Router>

@@ -5,6 +5,8 @@ import axios from "axios";
 import Modal from "../Common/Modal";
 import ServiceCard from "../Common/ServiceCard";
 import Card from "../Common/Card";
+const port = import.meta.env.PORT || `http://127.0.0.1:5000/`;
+console.log(port);
 
 const Home = () => {
   const [preferences, setPreferences] = useState();
@@ -15,28 +17,27 @@ const Home = () => {
 
   //assuming i am first time logging in
   useEffect(() => {
-    // fetch("https://sim-assignment-csit314-9e613de15308.herokuapp.com/api/getPreferences")
+    // https://sim-assignment-csit314-9e613de15308.herokuapp.com/api/getPreferences
+    // http://127.0.0.1:5000/api/getPreferences
     axios
-      .get("http://127.0.0.1:5000/api/getPreferences")
-      .then((Prefresponse) => {
-        setPreferences(Prefresponse.data.preferences);
-        console.log(Prefresponse.data.preferences);
+      .get(`${port}/api/getPreferences`)
+      .then((PrefResponse) => {
+        setPreferences(PrefResponse.data.preferences);
         //to change to dynamic to fit the condition
 
-        // fetch("https://sim-assignment-csit314-9e613de15308.herokuapp.com/api/getServices")
+        // ("https://sim-assignment-csit314-9e613de15308.herokuapp.com/api/getServices")
         axios
-          .get("http://127.0.0.1:5000/api/getServices")
+          .get(`${port}/api/getServices`)
           .then((response) => {
             setFilteredServices(response.data.services);
             setAllServices(response.data.services);
-            console.log(response.data.services);
-            if (!Prefresponse.data.preferences.id) {
+            if (!PrefResponse.data.preferences.id) {
               setShowPreferences(true);
-            } else if (Prefresponse.data.preferences.id) {
+            } else if (PrefResponse.data.preferences.id) {
               setShowPreferences(false);
-              setPreferences(Prefresponse.data.preferences);
+              setPreferences(PrefResponse.data.preferences);
               searchPreferenceService(
-                Prefresponse.data.preferences,
+                PrefResponse.data.preferences,
                 response.data.services
               );
             }
@@ -71,7 +72,6 @@ const Home = () => {
         return matchesRating || matchesReviews || matchesBudget;
       })
       .slice(0, 3);
-
     setPreferredServices(matchedServices);
   };
 
@@ -79,6 +79,16 @@ const Home = () => {
     //some api call to backend to save preferences
     setShowPreferences(false);
     searchPreferenceService(preferences);
+        // ("https://sim-assignment-csit314-9e613de15308.herokuapp.com/api/UpdateServices")
+    axios.post(`${port}/api/UpdatePreferences`, {
+        preferences: preferences,
+      })
+      .then((response) => {
+        console.log("Preferences saved successfully:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error saving preferences:", error);
+      });
     window.location.reload();
   };
 
@@ -101,21 +111,27 @@ const Home = () => {
       />
       <Typography variant="h1">Welcome to the Cleaning Service App</Typography>
       <Input type="search" placeholder="Search..." onChange={handleSearch} />
-      <Typography variant="h3">Services Based On Preference</Typography>
-      <div className="flex justify-around">
-        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {preferredServices.map((services, i) => (
-            <Card
-              additionalClass="w-70 mb-5"
-              key={services.id}
-              image="https://placehold.co/600x400"
-              variant="image"
-              title={services.name}
-              content={services.description}
-            />
-          ))}
+      {!preferredServices ? (
+        <div>
+          <Typography variant="h3">Services Based On Preference</Typography>
+          <div className="flex justify-around">
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+              {preferredServices.map((services, i) => (
+                <Card
+                  additionalClass="w-70 mb-5"
+                  key={services.id}
+                  image="https://placehold.co/600x400"
+                  variant="image"
+                  title={services.name}
+                  content={services.description}
+                />
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      ) : (
+        ""
+      )}
       <Typography variant="h3">All Services</Typography>
       <div className="flex justify-center">
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">

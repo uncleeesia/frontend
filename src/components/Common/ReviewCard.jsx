@@ -1,9 +1,9 @@
 import React from "react";
 import { FaStar } from "react-icons/fa";
 
-const ReviewCard = ({ rating, review, author, date, serviceType }) => {
+const ReviewCard = ({ rating, review, author, date, serviceType,additionalClassname }) => {
   return (
-    <div className="p-4 rounded-lg shadow-sm hover:shadow-md bg-card transition-all duration-300">
+    <div className={`p-4 rounded-lg shadow-sm hover:shadow-md bg-card transition-all duration-300`+ {additionalClassname}}>
       <div className="flex items-center mb-2">
         {[...Array(5)].map((_, index) => (
           <FaStar
