@@ -9,8 +9,7 @@ import Login from "./components/Login/Login";
 import Showcase from "./components/Common/Showcase/Showcase";
 import axios from "axios";
 import ServiceDetail from "./components/ServiceDetail/ServiceDetail";
-const port = import.meta.env.PORT || `http://127.0.0.1:5000/`;
-
+const port = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
 
 function App() {
   useEffect(() => {

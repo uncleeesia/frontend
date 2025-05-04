@@ -6,7 +6,6 @@ import Modal from "../Common/Modal";
 import ServiceCard from "../Common/ServiceCard";
 import Card from "../Common/Card";
 const port = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
-console.log(port);
 
 const Home = () => {
   const [preferences, setPreferences] = useState();
@@ -15,17 +14,14 @@ const Home = () => {
   const [preferredServices, setPreferredServices] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
 
-  //assuming i am first time logging in
   useEffect(() => {
-    // https://sim-assignment-csit314-9e613de15308.herokuapp.com/api/getPreferences
-    // http://127.0.0.1:5000/api/getPreferences
+    console.log(`${port}/api/getPreferences`);
     axios
       .get(`${port}/api/getPreferences`)
       .then((PrefResponse) => {
         setPreferences(PrefResponse.data.preferences);
         //to change to dynamic to fit the condition
 
-        // ("https://sim-assignment-csit314-9e613de15308.herokuapp.com/api/getServices")
         axios
           .get(`${port}/api/getServices`)
           .then((response) => {
@@ -76,11 +72,10 @@ const Home = () => {
   };
 
   const handleSavePreferences = (preferences) => {
-    //some api call to backend to save preferences
     setShowPreferences(false);
     searchPreferenceService(preferences);
-        // ("https://sim-assignment-csit314-9e613de15308.herokuapp.com/api/UpdateServices")
-    axios.post(`${port}/api/UpdatePreferences`, {
+    axios
+      .post(`${port}/api/UpdatePreferences`, {
         preferences: preferences,
       })
       .then((response) => {
