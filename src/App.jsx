@@ -9,6 +9,8 @@ import Login from "./components/Login/Login";
 import Showcase from "./components/Common/Showcase/Showcase";
 import axios from "axios";
 import ServiceDetail from "./components/ServiceDetail/ServiceDetail";
+import ConfirmBooking from "./components/ConfirmBooking/ConfirmBooking";
+
 const port = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
 
 function App() {
@@ -31,6 +33,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/showcase" element={<Showcase />} />
           <Route path="/service-details" element={<ServiceDetail />} />
+          <Route path="/summary" element={<ConfirmBooking />} />
         </Routes>
       </div>
     </Router>

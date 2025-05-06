@@ -16,7 +16,7 @@ const ServiceCard = ({
   const handleClick = () => {
     navigate("/service-details");
   };
-  
+
   return (
     <div
       onClick={handleClick}
@@ -28,7 +28,11 @@ const ServiceCard = ({
       <div className="p-4">
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-lg font-heading">{title}</h3>
-          <span className="text-primary font-bold">${price}/hr</span>
+          {price ? (
+            <span className="text-primary font-bold">${price}/hr</span>
+          ) : (
+            ""
+          )}
         </div>
         <p className="text-accent mb-3">{description}</p>
         <div className="flex items-center">

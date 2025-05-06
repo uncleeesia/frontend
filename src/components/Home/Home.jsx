@@ -10,7 +10,7 @@ const port = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
 const Home = () => {
   const [preferences, setPreferences] = useState();
   const [showPreferences, setShowPreferences] = useState(false);
-  const [allServices, setAllServices] = useState([]);
+  const [allServiceProvider, setAllServiceProvider] = useState([]);
   const [preferredServices, setPreferredServices] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
 
@@ -26,7 +26,7 @@ const Home = () => {
           .get(`${port}/api/getServices`)
           .then((response) => {
             setFilteredServices(response.data.services);
-            setAllServices(response.data.services);
+            setAllServiceProvider(response.data.services);
             if (!PrefResponse.data.preferences.id) {
               setShowPreferences(true);
             } else if (PrefResponse.data.preferences.id) {
@@ -88,7 +88,7 @@ const Home = () => {
   };
 
   const handleSearch = (query) => {
-    const matchedServices = allServices.filter((service) => {
+    const matchedServices = allServiceProvider.filter((service) => {
       return service.name
         .toLowerCase()
         .includes(query.target.value.toLowerCase());
@@ -135,7 +135,6 @@ const Home = () => {
               additionalClass="w-90"
               key={services.id}
               title={services.name}
-              price={services.price}
               description={services.description}
               rating={services.rating}
               reviews={services.reviews}
