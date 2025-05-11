@@ -15,9 +15,6 @@ const Login = () => {
   const navigate = useNavigate();
   const togglePasswordView = () => setShowPassword(!showPassword);
   const handleSubmit = (e) => {
-    e.preventDefault(); // prevents the page from refreshing
-    console.log("Form submitted:", email);
-    console.log("Form submitted:", password);
     localStorage.setItem("email", email);
     navigate('/');
   };

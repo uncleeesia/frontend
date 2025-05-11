@@ -5,10 +5,22 @@ import axios from "axios";
 import Modal from "../Common/Modal";
 import ServiceCard from "../Common/ServiceCard";
 import Card from "../Common/Card";
-const port = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
+// const port = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
+const port = "http://127.0.0.1:5000";
 
 const Home = () => {
-  const [preferences, setPreferences] = useState();
+  const [preferences, setPreferences] = useState({
+    id: 1,
+    theme: "light",
+    HouseCleaning: false,
+    CarCleaning: false,
+    BathroomCleaning: true,
+    WindowCleaning: true,
+    Indonesian: true,
+    Filipino: false,
+    Burmese: false,
+    Vietnamese: false,
+  });
   const [showPreferences, setShowPreferences] = useState(false);
   const [allServiceProvider, setAllServiceProvider] = useState([]);
   const [preferredServices, setPreferredServices] = useState([]);
@@ -18,23 +30,23 @@ const Home = () => {
     console.log(`${port}/api/getPreferences`);
     axios
       .get(`${port}/api/getPreferences`)
-      .then((PrefResponse) => {
-        setPreferences(PrefResponse.data.preferences);
+      .then((prefResponse) => {
+        setPreferences(prefResponse.data.preferences);
         //to change to dynamic to fit the condition
 
         axios
-          .get(`${port}/api/getServices`)
+          .get(`${port}/api/getServiceProviders`)
           .then((response) => {
-            setFilteredServices(response.data.services);
-            setAllServiceProvider(response.data.services);
-            if (!PrefResponse.data.preferences.id) {
+            setFilteredServices(response.data.servicesProvider);
+            setAllServiceProvider(response.data.servicesProvider);
+            if (!prefResponse.data.preferences.id) {
               setShowPreferences(true);
-            } else if (PrefResponse.data.preferences.id) {
+            } else if (prefResponse.data.preferences.id) {
               setShowPreferences(false);
-              setPreferences(PrefResponse.data.preferences);
+              setPreferences(prefResponse.data.preferences);
               searchPreferenceService(
-                PrefResponse.data.preferences,
-                response.data.services
+                prefResponse.data.preferences,
+                response.data.servicesProvider
               );
             }
           })
@@ -47,33 +59,37 @@ const Home = () => {
       });
   }, []);
 
-  const searchPreferenceService = (preferences, services) => {
-    const matchedServices = services
+  const searchPreferenceService = (preferences, servicesProvider) => {
+    const matchedServices = servicesProvider
       .filter((service) => {
-        const matchesRating =
-          (preferences.rating4 && service.rating >= 4) ||
-          (preferences.rating5 && service.rating === 5);
+        const cleaningTypeMatch =
+          (!preferences.HouseCleaning ||
+            service.cleaningTypes.includes("HouseCleaning")) &&
+          (!preferences.CarCleaning ||
+            service.cleaningTypes.includes("CarCleaning")) &&
+          (!preferences.BathroomCleaning ||
+            service.cleaningTypes.includes("BathroomCleaning")) &&
+          (!preferences.WindowCleaning ||
+            service.cleaningTypes.includes("WindowCleaning"));
 
-        const matchesReviews =
-          (preferences.reviews50 && service.reviews >= 50) ||
-          (preferences.reviews200 && service.reviews >= 200);
+        const nationalityMatch =
+          (!preferences.Indonesian || service.nationality === "Indonesian") &&
+          (!preferences.Filipino || service.nationality === "Filipino") &&
+          (!preferences.Burmese || service.nationality === "Burmese") &&
+          (!preferences.Vietnamese || service.nationality === "Vietnamese");
 
-        const matchesBudget =
-          (preferences.budgetLow && service.price < 30) ||
-          (preferences.budgetMid &&
-            service.price >= 30 &&
-            service.price <= 40) ||
-          (preferences.budgetHigh && service.price > 40);
-
-        return matchesRating || matchesReviews || matchesBudget;
+        return cleaningTypeMatch || nationalityMatch;
       })
+      .sort((a, b) => b.reviews - a.reviews)
       .slice(0, 3);
+
+    console.log(matchedServices);
     setPreferredServices(matchedServices);
   };
 
   const handleSavePreferences = (preferences) => {
     setShowPreferences(false);
-    searchPreferenceService(preferences);
+    searchPreferenceService(preferences, allServiceProvider);
     axios
       .post(`${port}/api/UpdatePreferences`, {
         preferences: preferences,
@@ -106,8 +122,8 @@ const Home = () => {
       />
       <Typography variant="h1">Welcome to the Cleaning Service App</Typography>
       <Input type="search" placeholder="Search..." onChange={handleSearch} />
-      {!preferredServices ? (
-        <div>
+      {preferredServices.length > 0 ? (
+        <div className="mb-5">
           <Typography variant="h3">Services Based On Preference</Typography>
           <div className="flex justify-around">
             <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -127,20 +143,38 @@ const Home = () => {
       ) : (
         ""
       )}
-      <Typography variant="h3">All Services</Typography>
+      <Typography variant="h3">All Service Provider</Typography>
       <div className="flex justify-center">
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
-          {filteredServices.map((services, i) => (
-            <ServiceCard
-              additionalClass="w-90"
-              key={services.id}
-              title={services.name}
-              description={services.description}
-              rating={services.rating}
-              reviews={services.reviews}
-              image={services.image}
-            />
-          ))}
+          {filteredServices.map((services) => {
+            const totalReviews =
+              services.cleaningTypes?.reduce(
+                (sum, ct) => sum + ct.reviews,
+                0
+              ) || 0;
+
+            const totalRating =
+              services.cleaningTypes?.reduce(
+                (sum, ct) => sum + ct.rating * ct.reviews,
+                0
+              ) || 0;
+
+            const avgRating =
+              totalReviews > 0 ? (totalRating / totalReviews).toFixed(1) : 0;
+
+            return (
+              <ServiceCard
+                additionalClass="w-90"
+                key={services.id}
+                id={services.id}
+                title={services.name}
+                description={services.description}
+                rating={avgRating}
+                reviews={totalReviews}
+                image={services.image}
+              />
+            );
+          })}
         </div>
       </div>
     </div>

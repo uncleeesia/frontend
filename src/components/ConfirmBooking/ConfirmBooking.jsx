@@ -11,15 +11,9 @@ const ConfirmBooking = () => {
   // Filter the service details by selected IDs
   const selectedServiceDetails = services.filter(service => selectedServices.includes(service.id));
 
-  // Calculate total price (Assuming price is like "$100-$300", picking the lower bound for the example)
-  const getServicePrice = (priceStr) => {
-    if (!priceStr) return 0;
-    // e.g., "$100-$300"
-    const match = priceStr.match(/\$?(\d+)/);
-    return match ? parseInt(match[1]) : 0;
-  };
+  // Calculate total price by summing up the price of the selected services
   const totalAmount = selectedServiceDetails.reduce(
-    (sum, service) => sum + getServicePrice(service.price), 0
+    (sum, service) => sum + service.price, 0
   );
 
   return (
@@ -29,6 +23,7 @@ const ConfirmBooking = () => {
           Confirm Your Booking
         </Typography>
 
+        {/* Services Selected */}
         <section className="mb-6">
           <Typography variant="h2" className="mb-2 text-heading">
             Services Selected
@@ -37,15 +32,16 @@ const ConfirmBooking = () => {
             {selectedServiceDetails.map((service) => (
               <li key={service.id} className="py-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">{service.name}</span>
-                  <span className="text-primary">{service.price}</span>
-                  <span className="text-gray-500 text-sm">{service.duration}</span>
+                  <span className="font-medium">{service.type}</span>
+                  <span className="text-primary">${service.price}</span>
+                  <span className="text-gray-500 text-sm">{service.duration} min</span>
                 </div>
               </li>
             ))}
           </ul>
         </section>
 
+        {/* Total Amount */}
         <section className="mb-6">
           <div className="flex justify-between items-center text-lg font-bold">
             <span>Total Amount:</span>
@@ -53,6 +49,7 @@ const ConfirmBooking = () => {
           </div>
         </section>
 
+        {/* Booking Date & Time */}
         <section className="mb-8">
           <Typography variant="h2" className="mb-1">Booking Date & Time</Typography>
           <div className="bg-gray-100 p-3 rounded text-heading">
@@ -68,6 +65,7 @@ const ConfirmBooking = () => {
           </div>
         </section>
 
+        {/* Booking Actions */}
         <div className="flex gap-4 justify-between">
           <Button
             className="bg-secondary text-foreground rounded-lg px-4 py-2 font-semibold shadow hover:bg-primary/10"
@@ -78,8 +76,8 @@ const ConfirmBooking = () => {
           <Button
             className="bg-primary text-white rounded-lg px-4 py-2 font-semibold shadow hover:bg-primary/90"
             onClick={() => {
-              alert("Booking Confirmed!"); // Replace with actual booking submission.
-              navigate("/");
+              alert("Booking Confirmed!"); // Replace with actual booking submission logic
+              navigate("/"); // Redirect to homepage after confirming
             }}
             disabled={selectedServiceDetails.length === 0 || !selectedDate}
           >

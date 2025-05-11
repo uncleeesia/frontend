@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Header = () => {
+const Header = (onChange) => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("email"));
   const [isLoginPage, setIsLoginPage] = useState(
@@ -10,8 +10,6 @@ const Header = () => {
 
   useEffect(() => {
   }, []);
-
-  useEffect(() => {}, []);
 
   const handleLogout = () => {
     localStorage.removeItem("email");

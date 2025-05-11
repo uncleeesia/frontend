@@ -7,16 +7,15 @@ import { FiX } from "react-icons/fi";
 
 const Modal = ({ isOpen, onClose, onSave }) => {
   const [preferences, setPreferences] = useState({
-    notifications: false,
     theme: "light",
-    language: "english",
-    budgetLow: false,
-    budgetMid: false,
-    budgetHigh: false,
-    rating4: false,
-    rating5: false,
-    reviews50: false,
-    reviews200: false,
+    HouseCleaning: false,
+    CarCleaning: false,
+    BathroomCleaning: false,
+    WindowCleaning: false,
+    Indonesian: false,
+    Filipino: false,
+    Burmese: false,
+    Vietnamese: false,
   });
 
   const handleCheckboxChange = (key) => (e) => {
@@ -47,39 +46,61 @@ const Modal = ({ isOpen, onClose, onSave }) => {
         </div>
 
         <div className="space-y-5">
-          <Checkbox
-            label="Enable Notifications"
-            defaultChecked={preferences.notifications}
-            onChange={handleCheckboxChange("notifications")}
-          />
-
           <div>
             <label className="block mb-2 text-gray-700 font-medium">
-              Budget
+              What type of services would you use the most?
             </label>
             <div className="space-y-2">
               <Checkbox
-                label="Below $30"
-                defaultChecked={preferences.budgetLow}
-                onChange={handleSingleCheckboxChange(
-                  ["budgetLow", "budgetMid", "budgetHigh"],
-                  "budgetLow"
+                label="House Cleaning"
+                defaultChecked={preferences.HouseCleaning}
+                onChange={handleCheckboxChange(
+                  [
+                    "House Cleaning",
+                    "Car Cleaning",
+                    "Bathroom Cleaning",
+                    "Window Cleaning",
+                  ],
+                  "House Cleaning"
                 )}
               />
               <Checkbox
-                label="$30–$40"
-                defaultChecked={preferences.budgetMid}
-                onChange={handleSingleCheckboxChange(
-                  ["budgetLow", "budgetMid", "budgetHigh"],
-                  "budgetMid"
+                label="Car Cleaning"
+                defaultChecked={preferences.CarCleaning}
+                onChange={handleCheckboxChange(
+                  [
+                    "House Cleaning",
+                    "Car Cleaning",
+                    "Bathroom Cleaning",
+                    "Window Cleaning",
+                  ],
+                  "Car Cleaning"
                 )}
               />
               <Checkbox
-                label="Above $40"
-                defaultChecked={preferences.budgetHigh}
-                onChange={handleSingleCheckboxChange(
-                  ["budgetLow", "budgetMid", "budgetHigh"],
-                  "budgetHigh"
+                label="Bathroom Cleaning"
+                defaultChecked={preferences.BathroomCleaning}
+                onChange={handleCheckboxChange(
+                  [
+                    "House Cleaning",
+                    "Car Cleaning",
+                    "Bathroom Cleaning",
+                    "Window Cleaning",
+                  ],
+                  "Bathroom Cleaning"
+                )}
+              />
+              <Checkbox
+                label="Window Cleaning"
+                defaultChecked={preferences.WindowCleaning}
+                onChange={handleCheckboxChange(
+                  [
+                    "House Cleaning",
+                    "Car Cleaning",
+                    "Bathroom Cleaning",
+                    "Window Cleaning",
+                  ],
+                  "Window Cleaning"
                 )}
               />
             </div>
@@ -87,47 +108,39 @@ const Modal = ({ isOpen, onClose, onSave }) => {
 
           <div>
             <label className="block mb-2 text-gray-700 font-medium">
-              Minimum Rating
+              What nationality do you prefer your cleaner to be?
             </label>
             <div className="space-y-2">
               <Checkbox
-                label="4★ and above"
-                defaultChecked={preferences.rating4}
-                onChange={handleSingleCheckboxChange(
-                  ["rating4", "rating5"],
-                  "rating4"
+                label="Indonesian"
+                defaultChecked={preferences.Indonesian}
+                onChange={handleCheckboxChange(
+                  ["Indonesian", "Filipino", "Burmese", "Vietnamese"],
+                  "Indonesian"
                 )}
               />
               <Checkbox
-                label="5★ only"
-                defaultChecked={preferences.rating5}
-                onChange={handleSingleCheckboxChange(
-                  ["rating4", "rating5"],
-                  "rating5"
-                )}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block mb-2 text-gray-700 font-medium">
-              Reviews
-            </label>
-            <div className="space-y-2">
-              <Checkbox
-                label="50+ Reviews"
-                defaultChecked={preferences.reviews50}
-                onChange={handleSingleCheckboxChange(
-                  ["reviews50", "reviews200"],
-                  "reviews50"
+                label="Filipino"
+                defaultChecked={preferences.Filipino}
+                onChange={handleCheckboxChange(
+                  ["Indonesian", "Filipino", "Burmese", "Vietnamese"],
+                  "Filipino"
                 )}
               />
               <Checkbox
-                label="200+ Reviews"
-                defaultChecked={preferences.reviews200}
-                onChange={handleSingleCheckboxChange(
-                  ["reviews50", "reviews200"],
-                  "reviews200"
+                label="Burmese"
+                defaultChecked={preferences.Burmese}
+                onChange={handleCheckboxChange(
+                  ["Indonesian", "Filipino", "Burmese", "Vietnamese"],
+                  "Burmese"
+                )}
+              />
+              <Checkbox
+                label="Vietnamese"
+                defaultChecked={preferences.Vietnamese}
+                onChange={handleCheckboxChange(
+                  ["Indonesian", "Filipino", "Burmese", "Vietnamese"],
+                  "Vietnamese"
                 )}
               />
             </div>
@@ -150,28 +163,6 @@ const Modal = ({ isOpen, onClose, onSave }) => {
               }}
               onChange={(option) =>
                 setPreferences({ ...preferences, theme: option.value })
-              }
-            />
-          </div>
-
-          <div>
-            <label className="block mb-2 text-gray-700 font-medium">
-              Language
-            </label>
-            <Dropdown
-              options={[
-                { value: "english", label: "English" },
-                { value: "spanish", label: "Spanish" },
-                { value: "french", label: "French" },
-              ]}
-              value={{
-                value: preferences.language,
-                label:
-                  preferences.language.charAt(0).toUpperCase() +
-                  preferences.language.slice(1),
-              }}
-              onChange={(option) =>
-                setPreferences({ ...preferences, language: option.value })
               }
             />
           </div>

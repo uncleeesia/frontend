@@ -3,6 +3,7 @@ import { FaStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const ServiceCard = ({
+  id,
   title,
   price,
   description,
@@ -12,9 +13,8 @@ const ServiceCard = ({
   additionalClass,
 }) => {
   const navigate = useNavigate();
-
   const handleClick = () => {
-    navigate("/service-details");
+    navigate(`/service-details?id=${id}`);
   };
 
   return (
