@@ -22,7 +22,7 @@ const ServiceDetail = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedServices, setSelectedServices] = useState([]);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
-  const [services, setServices] = useState(null);  // Start with null to avoid issues before data is fetched
+  const [services, setServices] = useState(null);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
@@ -31,20 +31,22 @@ const ServiceDetail = () => {
     axios
       .get(`${port}/api/getServicesById`, { params: { id } })
       .then((response) => {
-        // Ensure the services data is in the correct structure
-        if (response.data && response.data.services && Array.isArray(response.data.services)) {
-          setServices(response.data.services[0]); // Assuming services is an array
+        if (
+          response.data &&
+          response.data.services &&
+          Array.isArray(response.data.services)
+        ) {
+          setServices(response.data.services[0]);
         }
       })
       .catch((error) => {
         console.error("Error fetching services:", error);
-        setServices([]); // Set to an empty array if there's an error
+        setServices([]);
       });
   }, [id]);
 
-  // Ensure the services data is properly checked before rendering
   if (!services) {
-    return <p>Loading...</p>;  // Or a loading spinner if you prefer
+    return <p>Loading...</p>; 
   }
 
   const reviews = [
@@ -91,15 +93,15 @@ const ServiceDetail = () => {
       <header className="bg-primary py-8">
         <div className="container mx-auto px-4 flex flex-col items-center">
           <img
-            src={services.image}  // Ensure this field exists in the fetched data
+            src={services.image} 
             alt="Company Logo"
             className="h-50 rounded object-cover shadow-md"
           />
           <Typography variant="h1" className="my-4 ">
-            Professional Cleaning Services
+            {services.name}
           </Typography>
           <Typography variant="p" className="text-body opacity-90">
-            Your Trusted Partner in Cleanliness
+            {services.description}
           </Typography>
         </div>
       </header>
@@ -201,7 +203,9 @@ const ServiceDetail = () => {
               state: {
                 selectedServices,
                 selectedDate,
-                services: services.cleaningTypes.map(({ icon, ...rest }) => rest),
+                services: services.cleaningTypes.map(
+                  ({ icon, ...rest }) => rest
+                ),
               },
             })
           }

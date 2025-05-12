@@ -5,6 +5,7 @@ import axios from "axios";
 import Modal from "../Common/Modal";
 import ServiceCard from "../Common/ServiceCard";
 import Card from "../Common/Card";
+import { useNavigate } from "react-router-dom";
 const port = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
 // const port = "http://127.0.0.1:5000";
 
@@ -25,6 +26,7 @@ const Home = () => {
   const [allServiceProvider, setAllServiceProvider] = useState([]);
   const [preferredServices, setPreferredServices] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log(`${port}/api/getPreferences`);
@@ -135,6 +137,9 @@ const Home = () => {
                   variant="image"
                   title={services.name}
                   content={services.description}
+                  onClick={() => {
+                    navigate(`/service-details?id=${services.id}`);
+                  }}
                 />
               ))}
             </div>
