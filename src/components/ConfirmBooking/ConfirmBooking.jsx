@@ -2,27 +2,75 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Typography from "../Common/Typography";
 import Button from "../Common/Button";
+import jsPDF from "jspdf";
 
 const ConfirmBooking = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { selectedServices = [], services = [], selectedDate = null } = location.state || {};
 
-  // Filter the service details by selected IDs
-  const selectedServiceDetails = services.filter(service => selectedServices.includes(service.id));
+  const handleDownload = () => {
+    const doc = new jsPDF();
 
-  // Calculate total price by summing up the price of the selected services
+    doc.setFontSize(18);
+    doc.text("Booking Summary", 20, 20);
+
+    doc.setFontSize(14);
+    let y = 40;
+
+    selectedServiceDetails.forEach((service, index) => {
+      doc.text(
+        `${index + 1}. ${service.type} - $${service.price} (${
+          service.duration
+        } min)`,
+        20,
+        y
+      );
+      y += 10;
+    });
+
+    y += 10;
+    doc.text(`Total Amount: $${totalAmount}`, 20, y);
+    y += 10;
+
+    if (selectedDate) {
+      const formattedDate = new Date(selectedDate).toLocaleString(undefined, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      doc.text(`Booking Date & Time: ${formattedDate}`, 20, y);
+    } else {
+      doc.text(`Booking Date & Time: Not Set`, 20, y);
+    }
+
+    doc.save("booking-summary.pdf");
+  };
+
+  const { selectedServices = [], services = [], selectedDate = null } =
+    location.state || {};
+
+  const selectedServiceDetails = services.filter((service) =>
+    selectedServices.includes(service.id)
+  );
+
   const totalAmount = selectedServiceDetails.reduce(
-    (sum, service) => sum + service.price, 0
+    (sum, service) => sum + service.price,
+    0
   );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background font-inter">
-      <div className="bg-white rounded-lg shadow-lg p-8 max-w-lg w-full">
-        <Typography variant="h1" className="mb-6 text-primary text-center">
-          Confirm Your Booking
-        </Typography>
-
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="bg-white rounded-lg shadow-lg p-8 w-200">
+        <div className="flex flex-col mb-2">
+          <Typography variant="h1" className="text-primary text-center">
+            Confirm Your Booking
+          </Typography>
+          <Button className="ml-auto" onClick={handleDownload}>
+            Save Summary As PDF
+          </Button>
+        </div>
         {/* Services Selected */}
         <section className="mb-6">
           <Typography variant="h2" className="mb-2 text-heading">
@@ -34,7 +82,9 @@ const ConfirmBooking = () => {
                 <div className="flex items-center justify-between">
                   <span className="font-medium">{service.type}</span>
                   <span className="text-primary">${service.price}</span>
-                  <span className="text-gray-500 text-sm">{service.duration} min</span>
+                  <span className="text-gray-500 text-sm">
+                    {service.duration} min
+                  </span>
                 </div>
               </li>
             ))}
@@ -51,17 +101,21 @@ const ConfirmBooking = () => {
 
         {/* Booking Date & Time */}
         <section className="mb-8">
-          <Typography variant="h2" className="mb-1">Booking Date & Time</Typography>
+          <Typography variant="h2" className="mb-1">
+            Booking Date & Time
+          </Typography>
           <div className="bg-gray-100 p-3 rounded text-heading">
-            {selectedDate
-              ? new Date(selectedDate).toLocaleString(undefined, {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-              : <span className="text-red-500">Not Set</span>}
+            {selectedDate ? (
+              new Date(selectedDate).toLocaleString(undefined, {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            ) : (
+              <span className="text-red-500">Not Set</span>
+            )}
           </div>
         </section>
 
