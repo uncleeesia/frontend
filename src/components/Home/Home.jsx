@@ -5,8 +5,8 @@ import axios from "axios";
 import Modal from "../Common/Modal";
 import ServiceCard from "../Common/ServiceCard";
 import Card from "../Common/Card";
-// const port = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
-const port = "http://127.0.0.1:5000";
+const port = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
+// const port = "http://127.0.0.1:5000";
 
 const Home = () => {
   const [preferences, setPreferences] = useState({
