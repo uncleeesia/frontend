@@ -147,7 +147,7 @@ const About = () => {
           variant="primary"
           size="large"
           className="px-8 py-3 text-lg mx-auto"
-          onClick={() => navigate("/service-details")}
+          onClick={() => navigate("/")}
         >
           Book Your Cleaning Now
         </Button>
