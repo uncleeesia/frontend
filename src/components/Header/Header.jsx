@@ -48,6 +48,14 @@ const Header = () => {
               Contact
             </a>
           </li>
+          <li className="list-none">
+            <a
+              href="/feedback"
+              className="font-medium text-gray-600 hover:text-blue-600"
+            >
+              Feedback
+            </a>
+          </li>
 
           {!isLoginPage &&
             (isLoggedIn ? (

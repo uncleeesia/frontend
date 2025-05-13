@@ -98,6 +98,16 @@ const Home = () => {
 
   return (
     <div className="p-20">
+      <div className="flex justify-between items-center mb-4">
+      <div></div> {/* Placeholder to align right */}
+        <button
+          onClick={() => window.location.href = "/EditProfile"}
+          className="bg-blue-200 hover:bg-blue-300 text-blue-900 font-semibold py-2 px-4 rounded shadow"
+        >
+          Edit Profile
+        </button>
+      </div>
+
       <Modal
         isOpen={showPreferences}
         onClose={() => setShowPreferences(false)}
