@@ -5,26 +5,9 @@ import Button from '../Common/Button';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 
 const Contact = () => {
-  // Add state for form inputs if you want to make the form functional
-  // For example:
-  // const [formData, setFormData] = useState({
-  //   firstName: '',
-  //   lastName: '',
-  //   email: '',
-  //   phone: '',
-  //   message: '',
-  // });
-
-  // const handleChange = (e) => {
-  //   setFormData({ ...formData, [e.target.name]: e.target.value });
-  // };
-
   const handleSubmit = (e) => {
                 e.preventDefault();
-    // Add form submission logic here (e.g., send data to an API)
     alert("Message sent successfully! (Demo)");
-    // Optionally reset form:
-    // setFormData({ firstName: '', lastName: '', email: '', phone: '', message: '' });
 };
 
   return (

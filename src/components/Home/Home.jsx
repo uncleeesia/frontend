@@ -138,7 +138,7 @@ const Home = () => {
         <div className="mb-5">
           <Typography variant="h3">Services Based On Preference</Typography>
           <div className="flex justify-around">
-            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-30">
               {preferredServices.map((services, i) => (
                 <Card
                   additionalClass="w-70 mb-5"
@@ -158,9 +158,9 @@ const Home = () => {
       ) : (
         ""
       )}
-      <Typography variant="h3">All Service Provider</Typography>
+      <Typography variant="h3" className="mb-10">All Service Provider</Typography>
       <div className="flex justify-center">
-        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
+        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-40">
           {filteredServices.map((services) => {
             const totalReviews =
               services.cleaningTypes?.reduce(
