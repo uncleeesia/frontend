@@ -6,6 +6,8 @@ import About from "./components/About/About";
 import Contact from "./components/Contact/Contact";
 import UserProfile from "./components/UserProfile/UserProfile";
 import Login from "./components/Login/Login";
+import CleanerStats from "./components/CleanerStats/CleanerStats";
+import CleanerProfile from "./components/CleanerPage/CleanerPage";
 import Showcase from "./components/Common/Showcase/Showcase";
 import axios from "axios";
 import ServiceDetail from "./components/ServiceDetail/ServiceDetail";
@@ -31,6 +33,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/showcase" element={<Showcase />} />
           <Route path="/service-details" element={<ServiceDetail />} />
+          <Route path="/cleanerstats" element={<CleanerStats />} />
+          <Route path="/cleanerprofile" element={<CleanerProfile />} />
         </Routes>
       </div>
     </Router>
