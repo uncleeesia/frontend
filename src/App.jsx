@@ -5,6 +5,8 @@ import Home from "./components/Home/Home";
 import About from "./components/About/About";
 import Contact from "./components/Contact/Contact";
 import Login from "./components/Login/Login";
+import CleanerStats from "./components/CleanerStats/CleanerStats";
+import CleanerProfile from "./components/CleanerPage/CleanerPage";
 import Showcase from "./components/Common/Showcase/Showcase";
 import axios from "axios";
 import ServiceDetail from "./components/ServiceDetail/ServiceDetail";
@@ -35,6 +37,8 @@ function App() {
           <Route path="/summary" element={<ConfirmBooking />} />
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/editProfile" element={<EditProfile />} />
+          <Route path="/cleanerstats" element={<CleanerStats />} />
+          <Route path="/cleanerprofile" element={<CleanerProfile />} />
         </Routes>
       </div>
     </Router>
