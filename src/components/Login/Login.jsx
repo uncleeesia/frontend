@@ -26,7 +26,7 @@ const Login = () => {
           Welcome Back
         </Typography>
         <Typography variant="h6" className="text-gray-500 text-center">
-          Don't have an account? <span className="text-white">Sign up</span>
+          Don't have an account? <span className="text-white cursor-pointer" onClick={() => navigate("/register")}>Sign up</span>
         </Typography>
 
         <form onSubmit={handleSubmit} className="w-full flex flex-col gap-3">
