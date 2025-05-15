@@ -16,6 +16,6 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: 'C:/SIM/CSIT314-SoftwareMethodology/Assignment/frontend/src/setupTests.js',
+    setupFiles: 'src/setupTests.js',
   },
 });
