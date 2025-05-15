@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Header from "./components/Header/Header";
-import Home from "./components/Home/Home";
-import About from "./components/About/About";
-import Contact from "./components/Contact/Contact";
-import Login from "./components/Login/Login";
-import CleanerStats from "./components/CleanerStats/CleanerStats";
-import CleanerProfile from "./components/CleanerPage/CleanerPage";
-import Register from "./components/Register/Register";
-import UploadCert from "./components/UploadCert/UploadCert"
+import ViewHome from "./components/ViewHome/ViewHome";
+import ViewAbout from "./components/ViewAbout/ViewAbout";
+import ViewContact from "./components/ViewContact/ViewContact";
+import ViewBlacklistUser from "./components/ViewBlacklistUser/ViewBlacklistUser";
+import ViewServiceDetail from "./components/ServiceDetail/ViewServiceDetail";
+import ViewConfirmBooking from "./components/ViewConfirmBooking/ViewConfirmBooking";
+import ViewFeedback from "./components/ViewFeedback/ViewFeedback";
+import ViewEditProfile from "./components/ViewEditProfile/ViewEditProfile";
+import ViewCleanerStats from "./components/ViewCleanerStats/ViewCleanerStats";
+import ViewCleanerProfile from "./components/ViewCleanerPage/ViewCleanerPage";
 import Showcase from "./components/Common/Showcase/Showcase";
-import BlacklistUser from "./components/BlacklistUser/BlacklistUser";
+import ViewHeader from "./components/ViewHeader/ViewHeader";
+import ViewLogin from "./components/ViewLogin/ViewLogin";
+import ViewRegister from "./components/ViewRegister/ViewRegister";
+import ViewUploadCert from "./components/ViewUploadCert/ViewUploadCert";
 import axios from "axios";
-import ServiceDetail from "./components/ServiceDetail/ServiceDetail";
-import ConfirmBooking from "./components/ConfirmBooking/ConfirmBooking";
-import Feedback from "./components/Feedback/Feedback";
-import EditProfile from './components/EditProfile/EditProfile';
+
 const port = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
 
 function App() {
@@ -29,22 +30,22 @@ function App() {
   return (
     <Router>
       <div>
-        <Header />
+        <ViewHeader />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/BlacklistUser" element={<BlacklistUser />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/uploadcert" element={<UploadCert />} />
+          <Route path="/" element={<ViewHome />} />
+          <Route path="/about" element={<ViewAbout />} />
+          <Route path="/contact" element={<ViewContact />} />
+          <Route path="/BlacklistUser" element={<ViewBlacklistUser />} />
+          <Route path="/login" element={<ViewLogin />} />
+          <Route path="/register" element={<ViewRegister />} />
+          <Route path="/uploadcert" element={<ViewUploadCert />} />
           <Route path="/showcase" element={<Showcase />} />
-          <Route path="/service-details" element={<ServiceDetail />} />
-          <Route path="/summary" element={<ConfirmBooking />} />
-          <Route path="/feedback" element={<Feedback />} />
-          <Route path="/editProfile" element={<EditProfile />} />
-          <Route path="/cleanerstats" element={<CleanerStats />} />
-          <Route path="/cleanerprofile" element={<CleanerProfile />} />
+          <Route path="/service-details" element={<ViewServiceDetail />} />
+          <Route path="/summary" element={<ViewConfirmBooking />} />
+          <Route path="/feedback" element={<ViewFeedback />} />
+          <Route path="/editProfile" element={<ViewEditProfile />} />
+          <Route path="/cleanerstats" element={<ViewCleanerStats />} />
+          <Route path="/cleanerprofile" element={<ViewCleanerProfile />} />
         </Routes>
       </div>
     </Router>
