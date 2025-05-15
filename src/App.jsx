@@ -6,7 +6,10 @@ import About from "./components/About/About";
 import Contact from "./components/Contact/Contact";
 import UserProfile from "./components/UserProfile/UserProfile";
 import Login from "./components/Login/Login";
+import Register from "./components/Register/Register";
+import UploadCert from "./components/UploadCert/UploadCert"
 import Showcase from "./components/Common/Showcase/Showcase";
+import BlacklistUser from "./components/BlacklistUser/BlacklistUser";
 import axios from "axios";
 import ServiceDetail from "./components/ServiceDetail/ServiceDetail";
 import ConfirmBooking from "./components/ConfirmBooking/ConfirmBooking";
@@ -30,7 +33,10 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/profile" element={<UserProfile />} />
+          <Route path="/BlacklistUser" element={<BlacklistUser />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/uploadcert" element={<UploadCert />} />
           <Route path="/showcase" element={<Showcase />} />
           <Route path="/service-details" element={<ServiceDetail />} />
           <Route path="/summary" element={<ConfirmBooking />} />
