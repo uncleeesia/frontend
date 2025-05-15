@@ -29,7 +29,6 @@ const ConfirmBooking = () => {
     (sum, service) => sum + service.price,
     0
   );
-
   const handleDownload = () => {
     const doc = new jsPDF();
     const pageHeight =
@@ -297,6 +296,7 @@ const ConfirmBooking = () => {
         </div>
         <div className="flex justify-end mb-10">
           <Button
+            aria-label="download"
             onClick={handleDownload}
             className="text-sm"
             variant="outline"
@@ -503,6 +503,8 @@ const ConfirmBooking = () => {
                 </div>
 
                 <Button
+                  aria-label="submit"
+                  name="submit"
                   type="submit"
                   variant="primary"
                   fullWidth

@@ -29,7 +29,6 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(`${port}/api/getPreferences`);
     axios
       .get(`${port}/api/getPreferences`)
       .then((prefResponse) => {
@@ -85,7 +84,6 @@ const Home = () => {
       .sort((a, b) => b.reviews - a.reviews)
       .slice(0, 3);
 
-    console.log(matchedServices);
     setPreferredServices(matchedServices);
   };
 

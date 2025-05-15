@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "vite:test": "npm i --legacy-peer-deps && vitest run --coverage --watch"
+    "vite:test": "npm i --legacy-peer-deps && vitest --coverage --watch"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.4",
@@ -28,7 +28,8 @@
     "react-helmet": "^6.1.0",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.5.2",
-    "recharts": "^2.15.3"
+    "recharts": "^2.15.3",
+    "web-vitals": "^5.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
