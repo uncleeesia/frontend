@@ -6,6 +6,7 @@ import ViewContact from "./components/ViewContact/ViewContact";
 import ViewBlacklistUser from "./components/ViewBlacklistUser/ViewBlacklistUser";
 import ViewServiceDetail from "./components/ViewServiceDetail/ViewServiceDetail";
 import ViewConfirmBooking from "./components/ViewConfirmBooking/ViewConfirmBooking";
+import ViewBookingHistory from "./components/ViewCleanerBookingHistory/ViewCleanerBookingHistory";
 import ViewFeedback from "./components/ViewFeedback/ViewFeedback";
 import ViewEditProfile from "./components/ViewEditProfile/ViewEditProfile";
 import ViewCleanerStats from "./components/ViewCleanerStats/ViewCleanerStats";
@@ -42,6 +43,7 @@ function App() {
           <Route path="/showcase" element={<Showcase />} />
           <Route path="/service-details" element={<ViewServiceDetail />} />
           <Route path="/summary" element={<ViewConfirmBooking />} />
+          <Route path="/bookinghistory" element={<ViewBookingHistory />} />
           <Route path="/feedback" element={<ViewFeedback />} />
           <Route path="/editProfile" element={<ViewEditProfile />} />
           <Route path="/cleanerstats" element={<ViewCleanerStats />} />
