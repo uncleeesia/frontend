@@ -24,11 +24,12 @@ const Login = () => {
           localStorage.setItem("user_name", response.data.user_name);
           localStorage.setItem("user_email", response.data.user_email);
         }
+        navigate("/");
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+        alert("Invalid email or password");
       });
-    navigate("/");
   };
 
   return (
