@@ -205,7 +205,7 @@ const ViewHome = () => {
               <ServiceCard
                 additionalClass="w-90"
                 key={index}
-                id={services.service_id}
+                id={services.by_user_id}
                 title={services.username}
                 description={services.service_description}
                 image="https://placehold.co/600x400"
