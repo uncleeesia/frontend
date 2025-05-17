@@ -13,7 +13,7 @@ const ViewAccountCredential = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Updated Profile:", profile);
-    alert("Profile updated successfully!");
+    alert("Password Updated Successfully!");
   };
 
   return (
