@@ -38,7 +38,7 @@ const ViewServiceDetail = () => {
       });
 
     axios
-      .get(`${port}/api/getAllReviewsById?service_id=${id}`)
+      .get(`${port}/api/getAllReviewsById?by_user_id=${id}`)
       .then((response) => {
         setReviews(response.data.reviews);
       })
