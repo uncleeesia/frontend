@@ -6,7 +6,8 @@ import { BsApple, BsGoogle } from "react-icons/bs";
 import { FaXTwitter } from "react-icons/fa6";
 import Typography from "../Common/Typography";
 import Button from "../Common/Button";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState(undefined);
@@ -15,8 +16,19 @@ const Login = () => {
   const navigate = useNavigate();
   const togglePasswordView = () => setShowPassword(!showPassword);
   const handleSubmit = (e) => {
-    localStorage.setItem("email", email);
-    navigate('/');
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/api/getUser?email=${email}`)
+      .then((response) => {
+        if (response.data.status === "success") {
+          localStorage.setItem("user_id", response.data.user_id);
+          localStorage.setItem("user_name", response.data.user_name);
+          localStorage.setItem("user_email", response.data.user_email);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+    navigate("/");
   };
 
   return (
@@ -26,7 +38,13 @@ const Login = () => {
           Welcome Back
         </Typography>
         <Typography variant="h6" className="text-gray-500 text-center">
-          Don't have an account? <span className="text-white cursor-pointer" onClick={() => navigate("/register")}>Sign up</span>
+          Don't have an account?{" "}
+          <span
+            className="text-white cursor-pointer"
+            onClick={() => navigate("/register")}
+          >
+            Sign up
+          </span>
         </Typography>
 
         <form onSubmit={handleSubmit} className="w-full flex flex-col gap-3">

@@ -26,38 +26,63 @@ const ViewHome = () => {
   const [allServiceProvider, setAllServiceProvider] = useState([]);
   const [preferredServices, setPreferredServices] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
+  const [user_id, setUserId] = useState(
+    !!localStorage.getItem("user_id") ? localStorage.getItem("user_id") : null
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .get(`${port}/api/getPreferences`)
-      .then((prefResponse) => {
-        setPreferences(prefResponse.data.preferences);
-        //to change to dynamic to fit the condition
+    if (!user_id) {
+      axios
+        .get(`${port}/api/getServiceProviders`)
+        .then((response) => {
+          setFilteredServices(response.data.servicesProvider);
+          setAllServiceProvider(response.data.servicesProvider);
+          if (!prefResponse.data.preferences.id) {
+            setShowPreferences(true);
+          } else if (prefResponse.data.preferences.id) {
+            setShowPreferences(false);
+            setPreferences(prefResponse.data.preferences);
+            searchPreferenceService(
+              prefResponse.data.preferences,
+              response.data.servicesProvider
+            );
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    } else {
+      axios
+        .get(`${port}/api/getPreferences?user_id=${user_id}`)
+        .then((prefResponse) => {
+          setPreferences(prefResponse.data.preferences);
+          //to change to dynamic to fit the condition
 
-        axios
-          .get(`${port}/api/getServiceProviders`)
-          .then((response) => {
-            setFilteredServices(response.data.servicesProvider);
-            setAllServiceProvider(response.data.servicesProvider);
-            if (!prefResponse.data.preferences.id) {
-              setShowPreferences(true);
-            } else if (prefResponse.data.preferences.id) {
-              setShowPreferences(false);
-              setPreferences(prefResponse.data.preferences);
-              searchPreferenceService(
-                prefResponse.data.preferences,
-                response.data.servicesProvider
-              );
-            }
-          })
-          .catch((error) => {
-            console.error("Error fetching data:", error);
-          });
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+          axios
+            .get(`${port}/api/getServiceProviders`)
+            .then((response) => {
+              setFilteredServices(response.data.servicesProvider);
+              setAllServiceProvider(response.data.servicesProvider);
+              if (!prefResponse.data.preferences.id) {
+                setShowPreferences(true);
+              } else if (prefResponse.data.preferences.id) {
+                setShowPreferences(false);
+                setPreferences(prefResponse.data.preferences);
+                searchPreferenceService(
+                  prefResponse.data.preferences,
+                  response.data.servicesProvider
+                );
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching data:", error);
+            });
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    }
   }, []);
 
   const searchPreferenceService = (preferences, servicesProvider) => {
@@ -87,12 +112,12 @@ const ViewHome = () => {
     setPreferredServices(matchedServices);
   };
 
-  const handleSavePreferences = (preferences) => {
+  const handleSavePreferences = (_preferences) => {
     setShowPreferences(false);
-    searchPreferenceService(preferences, allServiceProvider);
+    searchPreferenceService(_preferences, allServiceProvider);
     axios
       .post(`${port}/api/UpdatePreferences`, {
-        preferences: preferences,
+        preferences: _preferences,
       })
       .then((response) => {
         console.log("Preferences saved successfully:", response.data);
@@ -146,7 +171,9 @@ const ViewHome = () => {
       ) : (
         ""
       )}
-      <Typography variant="h3" className="mb-10">All Service Provider</Typography>
+      <Typography variant="h3" className="mb-10">
+        All Service Provider
+      </Typography>
       <div className="flex justify-center">
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-40">
           {filteredServices.map((services) => {
