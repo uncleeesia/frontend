@@ -60,7 +60,7 @@ const ViewHome = () => {
         .get(`${port}/api/getPreferences?user_id=${user_id}`)
         .then((prefResponse) => {
           setPreferences(prefResponse.data.preferences);
-          return prefResponse;
+          return JSON.parse(prefResponse.data.preferences);
         })
         .then((prefResponse) => {
           axios
@@ -80,13 +80,13 @@ const ViewHome = () => {
               allService = Array.from(new Set([...allService]));
               setFilteredServices(allService);
               setAllServiceProvider(allService);
-              if (!prefResponse.data.preferences.id) {
+              if (!prefResponse.id) {
                 setShowPreferences(true);
-              } else if (prefResponse.data.preferences.id) {
+              } else if (prefResponse.id) {
                 setShowPreferences(false);
-                setPreferences(prefResponse.data.preferences);
+                setPreferences(prefResponse);
                 searchPreferenceService(
-                  prefResponse.data.preferences,
+                  prefResponse,
                   allService
                 );
               }
@@ -107,13 +107,13 @@ const ViewHome = () => {
       .filter((service) => {
         const cleaningTypeMatch =
           (!preferences.HouseCleaning ||
-            service.cleaningTypes.includes("HouseCleaning")) &&
+            service.cleaningTypes.includes("House")) &&
           (!preferences.CarCleaning ||
-            service.cleaningTypes.includes("CarCleaning")) &&
+            service.cleaningTypes.includes("Car")) &&
           (!preferences.BathroomCleaning ||
-            service.cleaningTypes.includes("BathroomCleaning")) &&
+            service.cleaningTypes.includes("Bathroom")) &&
           (!preferences.WindowCleaning ||
-            service.cleaningTypes.includes("WindowCleaning"));
+            service.cleaningTypes.includes("Window"));
 
         const nationalityMatch =
           (!preferences.Indonesian || service.nationality === "Indonesian") &&
@@ -174,16 +174,16 @@ const ViewHome = () => {
           <Typography variant="h3">Services Based On Preference</Typography>
           <div className="flex justify-around">
             <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-30">
-              {preferredServices.map((services, i) => (
+              {preferredServices.map((services, index) => (
                 <Card
                   additionalClass="w-70 mb-5"
-                  key={services.id}
+                  key={services.service_id}
                   image="https://placehold.co/600x400"
                   variant="image"
-                  title={services.name}
-                  content={services.description}
+                  title={services.service_name}
+                  content={services.service_description}
                   onClick={() => {
-                    navigate(`/service-details?id=${services.id}`);
+                    navigate(`/service-details?id=${services.service_id}`);
                   }}
                 />
               ))}
@@ -206,9 +206,9 @@ const ViewHome = () => {
                 additionalClass="w-90"
                 key={index}
                 id={services.service_id}
-                title={services.service_name}
+                title={services.username}
                 description={services.service_description}
-                image={services.picture_url[0]}
+                image="https://placehold.co/600x400"
               />
             ))
           )}
