@@ -2,11 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {
-  FaArrowLeft,
-  FaArrowRight,
-  FaComments
-} from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaComments } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Button from "../Common/Button";
 import ReviewCard from "../Common/ReviewCard";
@@ -22,6 +18,7 @@ const ViewServiceDetail = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
+  const [reviews, setReviews] = useState({});
 
   useEffect(() => {
     axios
@@ -43,10 +40,7 @@ const ViewServiceDetail = () => {
     axios
       .get(`${port}/api/getAllReviewsById?serviceId=${id}`)
       .then((response) => {
-        setServices((prev) => ({
-          ...prev,
-          reviews: response.data.reviews,
-        }));
+        setReviews(response.data.reviews);
       })
       .catch((error) => {
         console.error("Error fetching reviews:", error);
@@ -204,42 +198,46 @@ const ViewServiceDetail = () => {
       </div>
 
       {/* Reviews Section */}
-      <section className="bg-secondary py-12">
-        <div className="container mx-auto px-4">
-          <Typography variant="h2" className="mb-8 text-primary">
-            Customer Reviews
-          </Typography>
-          <div className="flex justify-center items-center gap-4 w-full">
-            <Button
-              onClick={() =>
-                setCurrentReviewIndex((prev) =>
-                  prev > 0 ? prev - 1 : reviews.length - 1
-                )
-              }
-              className="p-2 rounded-full bg-white shadow hover:bg-primary hover:text-white transition-colors"
-              aria-label="Previous review"
-            >
-              <FaArrowLeft className="text-blue-300" />
-            </Button>
-            <ReviewCard
-              author={reviews[currentReviewIndex].name}
-              review={reviews[currentReviewIndex].review}
-              rating={reviews[currentReviewIndex].rating}
-            />
-            <Button
-              onClick={() =>
-                setCurrentReviewIndex((prev) =>
-                  prev < reviews.length - 1 ? prev + 1 : 0
-                )
-              }
-              className="p-2 rounded-full bg-white shadow hover:bg-primary hover:text-white transition-colors"
-              aria-label="Next review"
-            >
-              <FaArrowRight className="text-blue-300" />
-            </Button>
+      {reviews.length > 0 ? (
+        <section className="bg-secondary py-12">
+          <div className="container mx-auto px-4">
+            <Typography variant="h2" className="mb-8 text-primary">
+              Customer Reviews
+            </Typography>
+            <div className="flex justify-center items-center gap-4 w-full">
+              <Button
+                onClick={() =>
+                  setCurrentReviewIndex((prev) =>
+                    prev > 0 ? prev - 1 : reviews.length - 1
+                  )
+                }
+                className="p-2 rounded-full bg-white shadow hover:bg-primary hover:text-white transition-colors"
+                aria-label="Previous review"
+              >
+                <FaArrowLeft className="text-blue-300" />
+              </Button>
+              <ReviewCard
+                author={reviews[currentReviewIndex].name}
+                review={reviews[currentReviewIndex].review}
+                rating={reviews[currentReviewIndex].rating}
+              />
+              <Button
+                onClick={() =>
+                  setCurrentReviewIndex((prev) =>
+                    prev < reviews.length - 1 ? prev + 1 : 0
+                  )
+                }
+                className="p-2 rounded-full bg-white shadow hover:bg-primary hover:text-white transition-colors"
+                aria-label="Next review"
+              >
+                <FaArrowRight className="text-blue-300" />
+              </Button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : (
+        ""
+      )}
 
       {/* Floating Chat Button */}
       <Button
