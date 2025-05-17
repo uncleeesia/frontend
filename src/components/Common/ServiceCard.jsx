@@ -1,5 +1,5 @@
 import React from "react";
-import { FaStar } from "react-icons/fa";
+// import { FaStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const ServiceCard = ({
@@ -7,8 +7,6 @@ const ServiceCard = ({
   title,
   price,
   description,
-  rating,
-  reviews,
   image,
   additionalClass,
 }) => {
@@ -35,19 +33,19 @@ const ServiceCard = ({
           )}
         </div>
         <p className="text-accent mb-3">{description}</p>
-        <div className="flex items-center">
-          <div className="flex">
-            {[...Array(5)].map((_, index) => (
+        {/* <div className="flex items-center">
+          <div className="flex"> */}
+            {/* {[...Array(5)].map((_, index) => (
               <FaStar
                 key={index}
                 className={`w-4 h-4 ${
                   index < rating ? "text-yellow-400" : "text-gray-300"
                 }`}
               />
-            ))}
-          </div>
-          <span className="ml-2 text-sm text-accent">({reviews} reviews)</span>
-        </div>
+            ))} */}
+          {/* </div> */}
+          {/* <span className="ml-2 text-sm text-accent">({reviews} reviews)</span> */}
+        {/* </div> */}
       </div>
     </div>
   );

@@ -49,16 +49,6 @@ const ViewHome = () => {
 
           setFilteredServices(allService);
           setAllServiceProvider(allService);
-          if (!prefResponse.data.preferences.id) {
-            setShowPreferences(true);
-          } else if (prefResponse.data.preferences.id) {
-            setShowPreferences(false);
-            setPreferences(prefResponse.data.preferences);
-            searchPreferenceService(
-              prefResponse.data.preferences,
-              response.data.serviceProviders
-            );
-          }
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -68,7 +58,9 @@ const ViewHome = () => {
         .get(`${port}/api/getPreferences?user_id=${user_id}`)
         .then((prefResponse) => {
           setPreferences(prefResponse.data.preferences);
-
+          return(prefResponse)
+        })
+        .then((prefResponse) => {
           axios
             .get(`${port}/api/getServiceProviders`)
             .then((response) => {
@@ -204,7 +196,7 @@ const ViewHome = () => {
               id={services.service_id}
               title={services.service_name}
               description={services.service_description}
-              image={services.picture_url}
+              image={services.picture_url[0]}
             />;
           })}
         </div>
