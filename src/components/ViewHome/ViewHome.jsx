@@ -36,8 +36,8 @@ const ViewHome = () => {
       axios
         .get(`${port}/api/getServiceProviders`)
         .then((response) => {
-          setFilteredServices(response.data.servicesProvider);
-          setAllServiceProvider(response.data.servicesProvider);
+          setFilteredServices(response.data.serviceProviders);
+          setAllServiceProvider(response.data.serviceProviders);
           if (!prefResponse.data.preferences.id) {
             setShowPreferences(true);
           } else if (prefResponse.data.preferences.id) {
@@ -45,7 +45,7 @@ const ViewHome = () => {
             setPreferences(prefResponse.data.preferences);
             searchPreferenceService(
               prefResponse.data.preferences,
-              response.data.servicesProvider
+              response.data.serviceProviders
             );
           }
         })
@@ -62,8 +62,8 @@ const ViewHome = () => {
           axios
             .get(`${port}/api/getServiceProviders`)
             .then((response) => {
-              setFilteredServices(response.data.servicesProvider);
-              setAllServiceProvider(response.data.servicesProvider);
+              setFilteredServices(response.data.serviceProviders);
+              setAllServiceProvider(response.data.serviceProviders);
               if (!prefResponse.data.preferences.id) {
                 setShowPreferences(true);
               } else if (prefResponse.data.preferences.id) {
@@ -71,7 +71,7 @@ const ViewHome = () => {
                 setPreferences(prefResponse.data.preferences);
                 searchPreferenceService(
                   prefResponse.data.preferences,
-                  response.data.servicesProvider
+                  response.data.serviceProviders
                 );
               }
             })
@@ -85,8 +85,8 @@ const ViewHome = () => {
     }
   }, []);
 
-  const searchPreferenceService = (preferences, servicesProvider) => {
-    const matchedServices = servicesProvider
+  const searchPreferenceService = (preferences, serviceProviders) => {
+    const matchedServices = serviceProviders
       .filter((service) => {
         const cleaningTypeMatch =
           (!preferences.HouseCleaning ||

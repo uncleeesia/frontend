@@ -16,14 +16,12 @@ const Login = () => {
   const navigate = useNavigate();
   const togglePasswordView = () => setShowPassword(!showPassword);
   const handleSubmit = (e) => {
+    e.preventDefault();
     axios
       .get(`${import.meta.env.VITE_API_URL}/api/getUser?email=${email}`)
       .then((response) => {
-        if (response.data.status === "success") {
-          localStorage.setItem("user_id", response.data.user_id);
-          localStorage.setItem("user_name", response.data.user_name);
-          localStorage.setItem("user_email", response.data.user_email);
-        }
+        localStorage.setItem("user_id", response.data.user.user_id);
+        localStorage.setItem("user_email", response.data.user.email);
         navigate("/");
       })
       .catch((error) => {
