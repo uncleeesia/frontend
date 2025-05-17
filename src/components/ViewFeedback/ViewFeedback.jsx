@@ -27,7 +27,7 @@ const Feedback = () => {
   const handleSubmit = (event) => {
     axios
       .post(
-        `${port}/api/feedback`,
+        `${port}/api/postFeedback`,
         JSON.stringify({
           feedback: feedbackText,
           username: isAnonymous ? "Anonymous" : username,
