@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Edit, BarChart2, Calendar, Star, MapPin, Phone, Mail, Clock, CheckCircle } from 'lucide-react';
+import { Edit, BarChart2, Calendar, Star, MapPin, Phone, Mail, Clock, CheckCircle, History } from 'lucide-react';
 
 const ViewCleanerProfile = () => {
   const [profile, setProfile] = useState({
     name: "Patricia Mondez",
     photo: "https://img.freepik.com/free-photo/portrait-caucasian-woman-smiling_53876-24998.jpg?ga=GA1.1.789004598.1747045939&semt=ais_hybrid&w=740",
     rating: 4.7,
-    jobsCompleted: 142,
+    jobsCompleted: 159,
     memberSince: "March 2023",
     location: "Bishan, Singapore",
     contact: {
@@ -15,7 +15,7 @@ const ViewCleanerProfile = () => {
       email: "patmon@cleaninghaul.com"
     },
     availability: "Monday to Friday, 8AM - 6PM",
-    services: ["Regular Cleaning", "Deep Cleaning", "Move-in/out Cleaning"],
+    services: ["Regular Cleaning", "Deep Cleaning", "Move-in Cleaning", "Office Cleaning"],
     bio: "Professional cleaner with 5+ years experience. I take pride in delivering spotless results with attention to detail. Pet-friendly and eco-conscious cleaning products available upon request.",
     certifications: ["CPR Certified", "Eco-Cleaning Certified", "WSQ in Enhanced Cleaning"]
   });
@@ -43,7 +43,7 @@ const ViewCleanerProfile = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Cleaner Profile</h1>
+          <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
           <div className="flex space-x-3">
             <button 
               onClick={() => setIsEditing(!isEditing)}
@@ -57,6 +57,12 @@ const ViewCleanerProfile = () => {
             className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition-colors">
               <BarChart2 size={18} />
               Check Performance
+            </button>
+            <button 
+            onClick={() => navigate('/bookinghistory')}
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition-colors">
+              <History size={18} />
+              View Booking History
             </button>
           </div>
         </div>
