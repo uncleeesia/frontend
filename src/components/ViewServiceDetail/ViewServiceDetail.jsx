@@ -1,20 +1,16 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
-import {
-  FaHome,
-  FaBuilding,
-  FaBroom,
-  FaTools,
-  FaArrowLeft,
-  FaArrowRight,
-  FaComments,
-} from "react-icons/fa";
-import Typography from "../Common/Typography";
-import Button from "../Common/Button";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaComments
+} from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import Button from "../Common/Button";
 import ReviewCard from "../Common/ReviewCard";
-import axios from "axios";
+import Typography from "../Common/Typography";
 const port = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
 // const port = "http://127.0.0.1:5000";
 
@@ -43,35 +39,23 @@ const ViewServiceDetail = () => {
         console.error("Error fetching services:", error);
         setServices([]);
       });
+
+    axios
+      .get(`${port}/api/getAllReviewsById?serviceId=${id}`)
+      .then((response) => {
+        setServices((prev) => ({
+          ...prev,
+          reviews: response.data.reviews,
+        }));
+      })
+      .catch((error) => {
+        console.error("Error fetching reviews:", error);
+      });
   }, [id]);
 
   if (!services) {
     return <p>Loading...</p>;
   }
-
-  const reviews = [
-    {
-      id: 1,
-      name: "John Smith",
-      rating: 5,
-      review: "Exceptional service! My house has never been cleaner.",
-      verified: true,
-    },
-    {
-      id: 2,
-      name: "Sarah Johnson",
-      rating: 4,
-      review: "Very professional team and great attention to detail.",
-      verified: true,
-    },
-    {
-      id: 3,
-      name: "Mike Brown",
-      rating: 5,
-      review: "Outstanding results! Will definitely use again.",
-      verified: true,
-    },
-  ];
 
   const handleServiceToggle = (serviceId) => {
     setSelectedServices((prev) =>

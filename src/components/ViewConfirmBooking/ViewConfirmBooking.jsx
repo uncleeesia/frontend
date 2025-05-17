@@ -254,13 +254,7 @@ const ViewConfirmBooking = () => {
     };
 
     axios
-      .post(`${port}/api/PostPayment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(paymentDetails),
-      })
+      .post(`${port}/api/postPayment`, JSON.stringify(paymentDetails))
       .then((response) => response.json())
       .then((data) => {
         setApiMessage(data.message || "Payment successful! Booking confirmed.");

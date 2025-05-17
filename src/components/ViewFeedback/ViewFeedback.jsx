@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
-import Typography from '../Common/Typography';
-import Button from '../Common/Button';
+import React, { useState } from "react";
+import Typography from "../Common/Typography";
+import Button from "../Common/Button";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+const port = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
 
 const Feedback = () => {
-  const [feedbackText, setFeedbackText] = useState('');
-  const [username, setUsername] = useState('');
-  const [contactNumber, setContactNumber] = useState('');
+  const [feedbackText, setFeedbackText] = useState("");
+  const [username, setUsername] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
-
+  const navigate = useNavigate();
+  
   const handleInputChange = (event) => {
     setFeedbackText(event.target.value);
   };
@@ -15,21 +19,33 @@ const Feedback = () => {
   const handleAnonymousChange = (e) => {
     setIsAnonymous(e.target.checked);
     if (e.target.checked) {
-      setUsername('');
-      setContactNumber('');
+      setUsername("");
+      setContactNumber("");
     }
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log('Feedback submitted:', feedbackText);
-    console.log('Anonymous:', isAnonymous ? 'Yes' : 'No');
-    console.log('Username:', isAnonymous ? 'Anonymous' : username);
-    console.log('Contact Number:', isAnonymous ? 'Not Provided' : contactNumber);
-    alert('Thank you for your feedback!');
-    setFeedbackText('');
-    setUsername('');
-    setContactNumber('');
+    axios
+      .post(
+        `${port}/api/feedback`,
+        JSON.stringify({
+          feedback: feedbackText,
+          username: isAnonymous ? "Anonymous" : username,
+          contactNumber: isAnonymous ? "Not Provided" : contactNumber,
+        })
+      )
+      .then((response) => {
+        console.log("Feedback submitted successfully:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error submitting feedback:", error);
+      });
+
+    alert("Thank you for your feedback!");
+    setFeedbackText("");
+    setUsername("");
+    setContactNumber("");
+    navigate("/");
   };
 
   return (
@@ -41,7 +57,10 @@ const Feedback = () => {
           </Typography>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
-              <label htmlFor="feedback" className="block text-gray-700 text-sm font-bold mb-2">
+              <label
+                htmlFor="feedback"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
                 Your Feedback:
               </label>
               <textarea
@@ -54,7 +73,10 @@ const Feedback = () => {
             </div>
 
             <div>
-              <label htmlFor="username" className="block text-gray-700 text-sm font-bold mb-2">
+              <label
+                htmlFor="username"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
                 Username:
               </label>
               <input
@@ -63,13 +85,16 @@ const Feedback = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={isAnonymous}
-                placeholder={isAnonymous ? 'Anonymous' : 'Enter your username'}
+                placeholder={isAnonymous ? "Anonymous" : "Enter your username"}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline disabled:bg-gray-100"
               />
             </div>
 
             <div>
-              <label htmlFor="contactNumber" className="block text-gray-700 text-sm font-bold mb-2">
+              <label
+                htmlFor="contactNumber"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
                 Contact Number:
               </label>
               <input
@@ -78,7 +103,9 @@ const Feedback = () => {
                 value={contactNumber}
                 onChange={(e) => setContactNumber(e.target.value)}
                 disabled={isAnonymous}
-                placeholder={isAnonymous ? 'Not Provided' : 'Enter your contact number'}
+                placeholder={
+                  isAnonymous ? "Not Provided" : "Enter your contact number"
+                }
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline disabled:bg-gray-100"
               />
             </div>
