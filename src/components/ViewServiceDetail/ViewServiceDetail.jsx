@@ -17,7 +17,7 @@ const ViewServiceDetail = () => {
   const [services, setServices] = useState(null);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const id = searchParams.get("id");
+  const id = searchParams.get("by_user_id");
   const [reviews, setReviews] = useState({});
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const ViewServiceDetail = () => {
       });
 
     axios
-      .get(`${port}/api/getAllReviewsById?serviceId=${id}`)
+      .get(`${port}/api/getAllReviewsById?service_id=${id}`)
       .then((response) => {
         setReviews(response.data.reviews);
       })
