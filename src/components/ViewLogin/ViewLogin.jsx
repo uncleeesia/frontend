@@ -22,6 +22,7 @@ const Login = () => {
       .then((response) => {
         localStorage.setItem("user_id", response.data.user.user_id);
         localStorage.setItem("user_email", response.data.user.email);
+        localStorage.setItem("preferences", JSON.parse(response.data.user.preferences));
         navigate("/");
       })
       .catch((error) => {

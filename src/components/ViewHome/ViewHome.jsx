@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Typography from "../Common/Typography";
 import Input from "../Common/Input";
-import axios from "axios";
+import axios, { all } from "axios";
 import Modal from "../Common/Modal";
 import ServiceCard from "../Common/ServiceCard";
 import Card from "../Common/Card";
@@ -36,8 +36,19 @@ const ViewHome = () => {
       axios
         .get(`${port}/api/getServiceProviders`)
         .then((response) => {
-          setFilteredServices(response.data.serviceProviders);
-          setAllServiceProvider(response.data.serviceProviders);
+          const allServiceraw = [];
+          const allService = [];
+          response.data.serviceProviders.forEach((data) => {
+            allServiceraw.push(data.service_list);
+          });
+          allServiceraw.forEach((data) => {
+            data.forEach((service) => {
+              allService.push(service);
+            });
+          });
+
+          setFilteredServices(allService);
+          setAllServiceProvider(allService);
           if (!prefResponse.data.preferences.id) {
             setShowPreferences(true);
           } else if (prefResponse.data.preferences.id) {
@@ -57,13 +68,23 @@ const ViewHome = () => {
         .get(`${port}/api/getPreferences?user_id=${user_id}`)
         .then((prefResponse) => {
           setPreferences(prefResponse.data.preferences);
-          //to change to dynamic to fit the condition
 
           axios
             .get(`${port}/api/getServiceProviders`)
             .then((response) => {
-              setFilteredServices(response.data.serviceProviders);
-              setAllServiceProvider(response.data.serviceProviders);
+              const allServiceraw = [];
+              const allService = [];
+              response.data.serviceProviders.forEach((data) => {
+                allServiceraw.push(data.service_list);
+              });
+              allServiceraw.forEach((data) => {
+                data.forEach((service) => {
+                  allService.push(service);
+                });
+              });
+
+              setFilteredServices(allService);
+              setAllServiceProvider(allService);
               if (!prefResponse.data.preferences.id) {
                 setShowPreferences(true);
               } else if (prefResponse.data.preferences.id) {
@@ -71,7 +92,7 @@ const ViewHome = () => {
                 setPreferences(prefResponse.data.preferences);
                 searchPreferenceService(
                   prefResponse.data.preferences,
-                  response.data.serviceProviders
+                  allService
                 );
               }
             })
@@ -177,33 +198,14 @@ const ViewHome = () => {
       <div className="flex justify-center">
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-40">
           {filteredServices.map((services) => {
-            const totalReviews =
-              services.cleaningTypes?.reduce(
-                (sum, ct) => sum + ct.reviews,
-                0
-              ) || 0;
-
-            const totalRating =
-              services.cleaningTypes?.reduce(
-                (sum, ct) => sum + ct.rating * ct.reviews,
-                0
-              ) || 0;
-
-            const avgRating =
-              totalReviews > 0 ? (totalRating / totalReviews).toFixed(1) : 0;
-
-            return (
-              <ServiceCard
-                additionalClass="w-90"
-                key={services.id}
-                id={services.id}
-                title={services.name}
-                description={services.description}
-                rating={avgRating}
-                reviews={totalReviews}
-                image={services.image}
-              />
-            );
+            <ServiceCard
+              additionalClass="w-90"
+              key={services.service_id}
+              id={services.service_id}
+              title={services.service_name}
+              description={services.service_description}
+              image={services.picture_url}
+            />;
           })}
         </div>
       </div>
