@@ -26,6 +26,7 @@ const ViewHome = () => {
   const [allServiceProvider, setAllServiceProvider] = useState([]);
   const [preferredServices, setPreferredServices] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
+  const [isloading, setIsLoading] = useState(true);
   const [user_id, setUserId] = useState(
     !!localStorage.getItem("user_id") ? localStorage.getItem("user_id") : null
   );
@@ -49,6 +50,7 @@ const ViewHome = () => {
 
           setFilteredServices(allService);
           setAllServiceProvider(allService);
+          setIsLoading(false);
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -58,23 +60,24 @@ const ViewHome = () => {
         .get(`${port}/api/getPreferences?user_id=${user_id}`)
         .then((prefResponse) => {
           setPreferences(prefResponse.data.preferences);
-          return(prefResponse)
+          return prefResponse;
         })
         .then((prefResponse) => {
           axios
             .get(`${port}/api/getServiceProviders`)
             .then((response) => {
               const allServiceraw = [];
-              const allService = [];
+              var allService = [];
               response.data.serviceProviders.forEach((data) => {
                 allServiceraw.push(data.service_list);
               });
               allServiceraw.forEach((data) => {
                 data.forEach((service) => {
                   allService.push(service);
+                  Array.from(new Set([...allService]));
                 });
               });
-
+              allService = Array.from(new Set([...allService]));
               setFilteredServices(allService);
               setAllServiceProvider(allService);
               if (!prefResponse.data.preferences.id) {
@@ -87,6 +90,7 @@ const ViewHome = () => {
                   allService
                 );
               }
+              setIsLoading(false);
             })
             .catch((error) => {
               console.error("Error fetching data:", error);
@@ -142,7 +146,10 @@ const ViewHome = () => {
   };
 
   const handleSearch = (query) => {
+    setIsLoading(true);
+
     const matchedServices = allServiceProvider.filter((service) => {
+      setIsLoading(false);
       return service.name
         .toLowerCase()
         .includes(query.target.value.toLowerCase());
@@ -150,7 +157,9 @@ const ViewHome = () => {
     setFilteredServices(matchedServices);
   };
 
-  return (
+  return isloading ? (
+    <p>Loading...</p>
+  ) : (
     <div className="p-20">
       <Modal
         isOpen={showPreferences}
@@ -189,16 +198,20 @@ const ViewHome = () => {
       </Typography>
       <div className="flex justify-center">
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-40">
-          {filteredServices.map((services) => {
-            <ServiceCard
-              additionalClass="w-90"
-              key={services.service_id}
-              id={services.service_id}
-              title={services.service_name}
-              description={services.service_description}
-              image={services.picture_url[0]}
-            />;
-          })}
+          {isloading ? (
+            <p>Loading...</p>
+          ) : (
+            filteredServices.map((services,index) => (
+              <ServiceCard
+                additionalClass="w-90"
+                key={index}
+                id={services.service_id}
+                title={services.service_name}
+                description={services.service_description}
+                image={services.picture_url[0]}
+              />
+            ))
+          )}
         </div>
       </div>
     </div>
