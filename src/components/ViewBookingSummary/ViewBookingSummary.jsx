@@ -7,7 +7,7 @@ import axios from "axios";
 const port = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
 // const port = "http://127.0.0.1:5000";
 
-const ViewConfirmBooking = () => {
+const ViewBookingSummary = () => {
   const [cardName, setCardName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
@@ -530,4 +530,4 @@ const ViewConfirmBooking = () => {
   );
 };
 
-export default ViewConfirmBooking;
+export default ViewBookingSummary;

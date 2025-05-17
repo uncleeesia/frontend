@@ -5,7 +5,7 @@ import ViewAbout from "./components/ViewAbout/ViewAbout";
 import ViewContact from "./components/ViewContact/ViewContact";
 import ViewBlacklistUser from "./components/ViewBlacklistUser/ViewBlacklistUser";
 import ViewServiceDetail from "./components/ViewServiceDetail/ViewServiceDetail";
-import ViewConfirmBooking from "./components/ViewConfirmBooking/ViewConfirmBooking";
+import ViewBookingSummary from "./components/ViewBookingSummary/ViewBookingSummary";
 import ViewBookingHistory from "./components/ViewCleanerBookingHistory/ViewCleanerBookingHistory";
 import ViewFeedback from "./components/ViewFeedback/ViewFeedback";
 import ViewAccountCredential from "./components/ViewAccountCredential/ViewAccountCredential";
@@ -42,7 +42,7 @@ function App() {
           <Route path="/uploadcert" element={<ViewUploadCert />} />
           <Route path="/showcase" element={<Showcase />} />
           <Route path="/service-details" element={<ViewServiceDetail />} />
-          <Route path="/summary" element={<ViewConfirmBooking />} />
+          <Route path="/summary" element={<ViewBookingSummary />} />
           <Route path="/bookinghistory" element={<ViewBookingHistory />} />
           <Route path="/feedback" element={<ViewFeedback />} />
           <Route path="/editProfile" element={<ViewAccountCredential />} />

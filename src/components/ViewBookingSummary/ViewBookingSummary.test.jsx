@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as router from "react-router-dom";
 import axios from "axios";
-import ViewConfirmBooking from "./ViewConfirmBooking";
+import ViewBookingSummary from "./ViewBookingSummary";
 
 vi.mock("react-router-dom", () => ({
   useLocation: vi.fn(),
@@ -31,7 +31,7 @@ vi.mock("jspdf", () => {
 
 vi.mock("axios");
 
-describe("ViewConfirmBooking Component", () => {
+describe("ViewBookingSummary Component", () => {
   const mockNavigate = vi.fn();
 
   beforeEach(() => {
@@ -49,7 +49,7 @@ describe("ViewConfirmBooking Component", () => {
         selectedDate: "2025-05-20T14:00:00Z",
       },
     });
-    render(<ViewConfirmBooking />);
+    render(<ViewBookingSummary />);
 
     expect(screen.getByText(/Bathroom Cleaning/)).toBeInTheDocument();
     expect(screen.getByText(/May 20/)).toBeInTheDocument();
@@ -64,7 +64,7 @@ describe("ViewConfirmBooking Component", () => {
       },
     });
 
-    render(<ViewConfirmBooking />);
+    render(<ViewBookingSummary />);
     const downloadBtn = screen.getByRole("button", {
       name: /download/i,
     });
@@ -88,7 +88,7 @@ describe("ViewConfirmBooking Component", () => {
       statusText: "OK",
     });
 
-    render(<ViewConfirmBooking />);
+    render(<ViewBookingSummary />);
 
     userEvent.type(screen.getByLabelText(/Cardholder Name/i), "John Doe");
     userEvent.type(
