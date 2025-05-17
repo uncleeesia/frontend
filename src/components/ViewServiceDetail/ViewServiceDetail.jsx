@@ -22,7 +22,7 @@ const ViewServiceDetail = () => {
 
   useEffect(() => {
     axios
-      .get(`${port}/api/getServicesById`, { params: { id } })
+      .get(`${port}/api/getServicesById?service_id=${ id }`)
       .then((response) => {
         if (
           response.data &&
