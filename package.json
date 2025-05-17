@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "vite:test": "npm i --legacy-peer-deps && vitest --coverage --watch"
+    "vitetest:unit-testing": "npm i --legacy-peer-deps && vitest --coverage --watch",
+    "vitetest:integration-testing": "vitest run"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.4",
