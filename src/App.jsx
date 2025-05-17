@@ -4,7 +4,7 @@ import ViewHome from "./components/ViewHome/ViewHome";
 import ViewAbout from "./components/ViewAbout/ViewAbout";
 import ViewContact from "./components/ViewContact/ViewContact";
 import ViewBlacklistUser from "./components/ViewBlacklistUser/ViewBlacklistUser";
-import ViewServiceDetail from "./components/ServiceDetail/ViewServiceDetail";
+import ViewServiceDetail from "./components/ViewServiceDetail/ViewServiceDetail";
 import ViewConfirmBooking from "./components/ViewConfirmBooking/ViewConfirmBooking";
 import ViewFeedback from "./components/ViewFeedback/ViewFeedback";
 import ViewEditProfile from "./components/ViewEditProfile/ViewEditProfile";
