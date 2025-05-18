@@ -16,6 +16,10 @@ import {
 } from "recharts";
 import { FileText, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+const port = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
+const user_id = localStorage.getItem("user_id");
+// campbellmartin@example.com, P@ssw0rd | user_id 6
 
 const COLORS = ["#34D399", "#60A5FA", "#FBBF24", "#F87171"];
 const MONTHS = [
@@ -118,213 +122,277 @@ function ViewCleanerStats() {
   ]);
 
   useEffect(() => {
-    console.log(`Date range changed to: ${dateRange}`);
+    axios
+      .get(`${port}/api/getAllPaymentTransactionByUserId?user_id=${user_id}`)
+      .then((res) => {
+        const payment = res.data.payment;
 
-    if (dateRange === "3m") {
-      setJobData([
-        { month: "Mar", jobs: 12, income: 1650 },
-        { month: "Apr", jobs: 10, income: 1380 },
-        { month: "May", jobs: 13, income: 1720 },
-      ]);
-      setStats((prev) => ({ ...prev, jobs: 35, income: 4750 }));
-    } else if (dateRange === "6m") {
-      setJobData([
-        { month: "Dec", jobs: 8, income: 1100 },
-        { month: "Jan", jobs: 5, income: 700 },
-        { month: "Feb", jobs: 8, income: 1100 },
-        { month: "Mar", jobs: 12, income: 1650 },
-        { month: "Apr", jobs: 10, income: 1380 },
-        { month: "May", jobs: 13, income: 1720 },
-      ]);
-      setStats((prev) => ({ ...prev, jobs: 56, income: 7650 }));
-    } else if (dateRange === "9m") {
-      setJobData([
-        { month: "Sep", jobs: 18, income: 2470 },
-        { month: "Oct", jobs: 15, income: 2050 },
-        { month: "Nov", jobs: 12, income: 1650 },
-        { month: "Dec", jobs: 8, income: 1100 },
-        { month: "Jan", jobs: 5, income: 700 },
-        { month: "Feb", jobs: 8, income: 1100 },
-        { month: "Mar", jobs: 12, income: 1650 },
-        { month: "Apr", jobs: 10, income: 1380 },
-        { month: "May", jobs: 13, income: 1720 },
-      ]);
-      setStats((prev) => ({ ...prev, jobs: 101, income: 13820 }));
-    } else if (dateRange === "1y") {
-      setJobData([
-        { month: "Jun", jobs: 16, income: 2000 },
-        { month: "Jul", jobs: 20, income: 2750 },
-        { month: "Aug", jobs: 22, income: 3030 },
-        { month: "Sep", jobs: 18, income: 2470 },
-        { month: "Oct", jobs: 15, income: 2050 },
-        { month: "Nov", jobs: 12, income: 1650 },
-        { month: "Dec", jobs: 8, income: 1100 },
-        { month: "Jan", jobs: 5, income: 700 },
-        { month: "Feb", jobs: 8, income: 1100 },
-        { month: "Mar", jobs: 12, income: 1650 },
-        { month: "Apr", jobs: 10, income: 1380 },
-        { month: "May", jobs: 13, income: 1720 },
-      ]);
-      setStats((prev) => ({ ...prev, jobs: 159, income: 21600 }));
-    }
+        const tagCounts = {};
+        payment.forEach((entry) => {
+          entry.service_tags.forEach((tag) => {
+            tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+          });
+        });
+        const result = Object.entries(tagCounts).map(([name, value]) => ({
+          name,
+          value,
+        }));
+        setServiceData(result);
+
+        const monthOrder = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
+        const now = new Date();
+        const currentMonthIdx = now.getMonth();
+        const rollingMonths = Array.from(
+          { length: 12 },
+          (_, i) => monthOrder[(currentMonthIdx - 11 + i + 12) % 12]
+        );
+
+        const dataByMonth = {};
+        rollingMonths.forEach((month) => {
+          dataByMonth[month] = {
+            jobs: 0,
+            income: 0,
+            scoreTotal: 0,
+            scoreCount: 0,
+          };
+        });
+
+        payment.forEach((booking) => {
+          const date = new Date(booking.payment_timestamp);
+          const month = date.toLocaleString("default", { month: "short" });
+          if (dataByMonth[month]) {
+            dataByMonth[month].jobs += 1;
+            dataByMonth[month].income += parseFloat(booking.price) || 0;
+
+            const score = booking.review_score;
+            if (typeof score === "number") {
+              dataByMonth[month].scoreTotal += score;
+              dataByMonth[month].scoreCount += 1;
+            }
+          }
+        });
+
+        const fullData = rollingMonths.map((month) => {
+          const { jobs, income, scoreTotal, scoreCount } = dataByMonth[month];
+          const avgScore =
+            scoreCount > 0 ? +(scoreTotal / scoreCount).toFixed(2) : 0;
+          return { month, jobs, income, avgScore };
+        });
+
+        const rangeMap = { "3m": 3, "6m": 6, "9m": 9, "1y": 12 };
+        const limit = rangeMap[dateRange] || 12;
+        const filteredData = fullData.slice(-limit);
+
+        const totalJobs = filteredData.reduce((sum, d) => sum + d.jobs, 0);
+        const totalIncome = filteredData.reduce((sum, d) => sum + d.income, 0);
+        const totalScoreSum = filteredData.reduce(
+          (sum, d) => sum + d.avgScore * (d.jobs || 1),
+          0
+        );
+        const totalScoreCount = filteredData.reduce(
+          (sum, d) => sum + (d.jobs || 0),
+          0
+        );
+        const overallAvgScore =
+          totalScoreCount > 0
+            ? +(totalScoreSum / totalScoreCount).toFixed(2)
+            : 0;
+
+        setJobData(filteredData);
+        setStats((prev) => ({
+          ...prev,
+          jobs: totalJobs,
+          income: totalIncome,
+          rating: overallAvgScore,
+        }));
+      })
+      .catch((err) => {
+        console.error("Error fetching data:", err);
+      });
   }, [dateRange]);
 
   const handleExportPDF = async () => {
     try {
       setIsExporting(true);
-      
+
       // Simple date format (DDMMYY)
       const now = new Date();
-      const day = String(now.getDate()).padStart(2, '0');
-      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, "0");
+      const month = String(now.getMonth() + 1).padStart(2, "0");
       const year = String(now.getFullYear()).slice(-2);
       const dateString = `${day}${month}${year}`;
-  
+
       const fileName = prompt(
-        "Enter a name for your PDF file:", 
+        "Enter a name for your PDF file:",
         `MyPerformanceSummary_${dateString}`
       );
-      
+
       if (!fileName) {
         setIsExporting(false);
         return;
       }
-  
-      const jsPDF = await import('jspdf');
+
+      const jsPDF = await import("jspdf");
       const { default: JsPDF } = jsPDF;
-      
+
       let dateRangeText = "Last 3 months";
-      if (dateRange === '6m') dateRangeText = "Last 6 months";
-      if (dateRange === '9m') dateRangeText = "Last 9 months";
-      if (dateRange === '1y') dateRangeText = "Last year";
-      
+      if (dateRange === "6m") dateRangeText = "Last 6 months";
+      if (dateRange === "9m") dateRangeText = "Last 9 months";
+      if (dateRange === "1y") dateRangeText = "Last year";
+
       const pdf = new JsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-        compress: true
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+        compress: true,
       });
-      
+
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
-      
+
       pdf.setProperties({
         title: "My Performance Dashboard",
         subject: `Performance Statistics (${dateRangeText})`,
         author: "Cleaning Service App",
-        creator: "Dashboard Export Tool"
+        creator: "Dashboard Export Tool",
       });
-      
+
       pdf.setFontSize(22);
       pdf.setTextColor(33, 33, 33);
-      pdf.text("My Performance Dashboard", pdfWidth / 2, 15, { align: 'center' });
-      
+      pdf.text("My Performance Dashboard", pdfWidth / 2, 15, {
+        align: "center",
+      });
+
       pdf.setFontSize(12);
       pdf.setTextColor(100, 100, 100);
-      pdf.text(`Report Period: ${dateRangeText}`, pdfWidth / 2, 22, { align: 'center' });
-      
-      const currentDate = new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
+      pdf.text(`Report Period: ${dateRangeText}`, pdfWidth / 2, 22, {
+        align: "center",
       });
-      pdf.text(`Generated on: ${currentDate}`, pdfWidth / 2, 28, { align: 'center' });
-      
+
+      const currentDate = new Date().toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+      pdf.text(`Generated on: ${currentDate}`, pdfWidth / 2, 28, {
+        align: "center",
+      });
+
       pdf.setDrawColor(200, 200, 200);
       pdf.line(15, 32, pdfWidth - 15, 32);
-  
+
       // Key Statistics
       pdf.setFontSize(16);
       pdf.setTextColor(33, 33, 33);
       pdf.text("Key Performance Metrics", 15, 40);
-      
+
       pdf.setFontSize(11);
       pdf.setTextColor(70, 70, 70);
-      
+
       const statsY = 48;
       pdf.text("Profile Views:", 15, statsY);
       pdf.text("Liked Received:", 15, statsY + 7);
       pdf.text("Completed Jobs:", 15, statsY + 14);
       pdf.text("Rating:", 15, statsY + 21);
       pdf.text("Total Revenue:", 15, statsY + 28);
-      
-      pdf.setFont(undefined, 'bold');
+
+      pdf.setFont(undefined, "bold");
       pdf.text(stats.views.toLocaleString(), 55, statsY);
       pdf.text(stats.saves.toString(), 55, statsY + 7);
       pdf.text(stats.jobs.toString(), 55, statsY + 14);
       pdf.text(`${stats.rating.toFixed(1)} / 5`, 55, statsY + 21);
       pdf.text(`${stats.income.toLocaleString()}`, 55, statsY + 28);
-      pdf.setFont(undefined, 'normal');
-      
+      pdf.setFont(undefined, "normal");
+
       // Monthly Jobs and Revenue
       pdf.setFontSize(16);
       pdf.setTextColor(33, 33, 33);
       pdf.text("Monthly Jobs and Revenue", 15, 85);
-      
+
       pdf.setFontSize(10);
       pdf.setTextColor(70, 70, 70);
-      
-      pdf.setFont(undefined, 'bold');
+
+      pdf.setFont(undefined, "bold");
       pdf.text("Month", 15, 95);
       pdf.text("Jobs Completed", 60, 95);
       pdf.text("Revenue", 110, 95);
-      pdf.setFont(undefined, 'normal');
-      
+      pdf.setFont(undefined, "normal");
+
       let tableY = 102;
       jobData.forEach((data, i) => {
-        pdf.text(data.month, 15, tableY + (i * 7));
-        pdf.text(data.jobs.toString(), 60, tableY + (i * 7));
-        pdf.text(`${data.income}`, 110, tableY + (i * 7));
+        pdf.text(data.month, 15, tableY + i * 7);
+        pdf.text(data.jobs.toString(), 60, tableY + i * 7);
+        pdf.text(`${data.income}`, 110, tableY + i * 7);
       });
-      
+
       const totalJobs = jobData.reduce((sum, item) => sum + item.jobs, 0);
       const totalIncome = jobData.reduce((sum, item) => sum + item.income, 0);
-      
-      tableY = tableY + (jobData.length * 7) + 5;
+
+      tableY = tableY + jobData.length * 7 + 5;
       pdf.setDrawColor(200, 200, 200);
       pdf.line(15, tableY - 7, 150, tableY - 7);
-      pdf.setFont(undefined, 'bold');
+      pdf.setFont(undefined, "bold");
       pdf.text("Total", 15, tableY);
       pdf.text(totalJobs.toString(), 60, tableY);
       pdf.text(`${totalIncome}`, 110, tableY);
-      pdf.setFont(undefined, 'normal');
-      
+      pdf.setFont(undefined, "normal");
+
       // Service Type Distribution
       let nextSectionY = tableY + 15;
-      
+
       if (nextSectionY > pdfHeight - 20) {
         pdf.addPage();
         nextSectionY = 20;
       }
-      
+
       pdf.setFontSize(16);
       pdf.setTextColor(33, 33, 33);
       pdf.text("Service Type Distribution", 15, nextSectionY);
-      
+
       pdf.setFontSize(10);
       pdf.setTextColor(70, 70, 70);
-      
+
       let serviceY = nextSectionY + 10;
-      pdf.setFont(undefined, 'bold');
+      pdf.setFont(undefined, "bold");
       pdf.text("Service Type", 15, serviceY);
       pdf.text("Percentage", 100, serviceY);
-      pdf.setFont(undefined, 'normal');
-      
+      pdf.setFont(undefined, "normal");
+
       serviceData.forEach((service, i) => {
-        pdf.text(service.name, 15, serviceY + ((i + 1) * 7));
-        pdf.text(`${service.value}%`, 100, serviceY + ((i + 1) * 7));
+        pdf.text(service.name, 15, serviceY + (i + 1) * 7);
+        pdf.text(`${service.value}%`, 100, serviceY + (i + 1) * 7);
       });
-      
+
       // Footer
       const pageCount = pdf.internal.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
         pdf.setPage(i);
         pdf.setFontSize(8);
         pdf.setTextColor(150, 150, 150);
-        pdf.text(`Page ${i} of ${pageCount}`, pdfWidth / 2, pdfHeight - 10, { align: 'center' });
-        pdf.text('Generated by CleanerStats Dashboard', pdfWidth - 15, pdfHeight - 10, { align: 'right' });
+        pdf.text(`Page ${i} of ${pageCount}`, pdfWidth / 2, pdfHeight - 10, {
+          align: "center",
+        });
+        pdf.text(
+          "Generated by CleanerStats Dashboard",
+          pdfWidth - 15,
+          pdfHeight - 10,
+          { align: "right" }
+        );
       }
-      
+
       // Save with user-specified filename
       pdf.save(`${fileName}.pdf`);
     } catch (error) {
