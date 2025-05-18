@@ -178,14 +178,14 @@ const ViewHome = () => {
             <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-30">
               {preferredServices.map((services, index) => (
                 <Card
-                  additionalClass="w-70 mb-5"
+                  additionalClass="w-60 mb-5"
                   key={services.service_id}
                   image={services.picture_url}
                   variant="image"
                   title={services.service_name}
                   content={services.service_description}
                   onClick={() => {
-                    navigate(`/service-details?user_id=${services.by_user_id}`);
+                    navigate(`/service-details?by_user_id=${services.by_user_id}`);
                   }}
                 />
               ))}

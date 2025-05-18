@@ -25,7 +25,6 @@ const ViewServiceDetail = () => {
     axios
       .get(`${port}/api/getUser?user_id=${id}`)
       .then((response) => {
-        console.log(response.data.user);
         return setUserDetails(response.data.user);
       })
       .catch((error) => {
@@ -53,7 +52,6 @@ const ViewServiceDetail = () => {
         axios
           .get(`${port}/api/getAllReviewsById?${uriParam}`)
           .then((response) => {
-            console.log(response.data.reviews);
             return setReviews(response.data.reviews);
           })
           .catch((error) => {
@@ -85,7 +83,6 @@ const ViewServiceDetail = () => {
   const handleChange = (date) => {
     setSelectedDate(date);
   };
-
   const isValidBooking = selectedDate && selectedServices.length > 0;
   return (
     <div className="min-h-screen bg-background font-inter">
@@ -93,7 +90,7 @@ const ViewServiceDetail = () => {
       <header className="bg-primary py-8">
         <div className="container mx-auto px-4 flex flex-col items-center">
           <img
-            src={"/" + userDetails.picture_url}
+            src={"./src/assets/" + userDetails.picture_url}
             alt="Company Logo"
             className="h-50 rounded object-cover shadow-md"
           />
