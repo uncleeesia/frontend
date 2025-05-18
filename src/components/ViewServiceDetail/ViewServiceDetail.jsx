@@ -13,24 +13,20 @@ const port = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
 const ViewServiceDetail = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedServices, setSelectedServices] = useState([]);
+  const [selectedServicestag, setSelectedServicestag] = useState([]);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
   const [services, setServices] = useState(null);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const id = searchParams.get("by_user_id");
   const [reviews, setReviews] = useState({});
-
+  const [userDetails, setUserDetails] = useState(null);
   useEffect(() => {
     axios
-      .get(`${port}/api/getServicesById?by_user_id=${ id }`)
+      .get(`${port}/api/getUser?user_id=${id}`)
       .then((response) => {
-        if (
-          response.data &&
-          response.data.services &&
-          Array.isArray(response.data.services)
-        ) {
-          setServices(response.data.services[0]);
-        }
+        console.log(response.data.user);
+        return setUserDetails(response.data.user);
       })
       .catch((error) => {
         console.error("Error fetching services:", error);
@@ -38,12 +34,34 @@ const ViewServiceDetail = () => {
       });
 
     axios
-      .get(`${port}/api/getAllReviewsById?by_user_id=${id}`)
+      .get(`${port}/api/getServicesById?user_id=${id}`)
       .then((response) => {
-        setReviews(response.data.reviews);
+        if (
+          response.data &&
+          response.data.services &&
+          Array.isArray(response.data.services)
+        ) {
+          setServices(response.data.services);
+        }
+        return response.data.services;
+      })
+      .then((data) => {
+        var uriParam = `service_id=${data[0].service_id}`;
+        data.forEach((element, index) => {
+          if (index !== 0) uriParam += `&service_id=${element.service_id}`;
+        });
+        axios
+          .get(`${port}/api/getAllReviewsById?${uriParam}`)
+          .then((response) => {
+            console.log(response.data.reviews);
+            return setReviews(response.data.reviews);
+          })
+          .catch((error) => {
+            console.error("Error fetching reviews:", error);
+          });
       })
       .catch((error) => {
-        console.error("Error fetching reviews:", error);
+        console.error("Error fetching services:", error);
       });
   }, [id]);
 
@@ -51,7 +69,12 @@ const ViewServiceDetail = () => {
     return <p>Loading...</p>;
   }
 
-  const handleServiceToggle = (serviceId) => {
+  const handleServiceToggle = (serviceId, serviceTag) => {
+    setSelectedServicestag((prev) =>
+      prev.includes(serviceTag)
+        ? prev.filter((id) => id !== serviceTag)
+        : [...prev, serviceTag]
+    );
     setSelectedServices((prev) =>
       prev.includes(serviceId)
         ? prev.filter((id) => id !== serviceId)
@@ -64,22 +87,21 @@ const ViewServiceDetail = () => {
   };
 
   const isValidBooking = selectedDate && selectedServices.length > 0;
-
   return (
     <div className="min-h-screen bg-background font-inter">
       {/* Header */}
       <header className="bg-primary py-8">
         <div className="container mx-auto px-4 flex flex-col items-center">
           <img
-            src={services.image}
+            src={"/" + userDetails.picture_url}
             alt="Company Logo"
             className="h-50 rounded object-cover shadow-md"
           />
           <Typography variant="h1" className="my-4 ">
-            {services.name}
+            {userDetails.username}
           </Typography>
           <Typography variant="p" className="text-body opacity-90">
-            {services.description}
+            {userDetails.profile_description}
           </Typography>
         </div>
       </header>
@@ -91,22 +113,24 @@ const ViewServiceDetail = () => {
         </Typography>
         <div className="flex justify-center mb-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {services.cleaningTypes && services.cleaningTypes.length > 0 ? (
-              services.cleaningTypes.map((service) => (
+            {services && services.length > 0 ? (
+              services.map((service) => (
                 <div
-                  key={service.id}
+                  key={service.service_id}
                   className={`p-6 bg-card rounded-2xl shadow-sm hover:shadow-lg transition-shadow border border-border flex flex-col items-start`}
                 >
                   <div className="mb-5 text-3xl text-primary">
-                    {service.type}
+                    {service.service_tags}
                   </div>
                   <Typography
                     variant="h3"
                     className="mb-1 text-heading font-bold"
                   >
-                    {service.name}
+                    {service.service_name}
                   </Typography>
-                  <p className="text-accent mb-4 h-20">{service.summary}</p>
+                  <p className="text-accent mb-4 h-20">
+                    {service.service_description}
+                  </p>
                   <div className="flex flex-wrap gap-2 text-base font-medium mt-auto text-gray-700">
                     <span className="mr-3 bg-gray-200 px-2 py-1 rounded text-xs">
                       Price:{" "}
@@ -116,21 +140,24 @@ const ViewServiceDetail = () => {
                     </span>
                     <span className="bg-gray-200 px-2 py-1 rounded text-xs">
                       Duration:{" "}
-                      <span className="font-semibold">
-                        {service.duration} in minutes
-                      </span>
+                      <span className="font-semibold">{service.duration}</span>
                     </span>
                   </div>
                   <div className="mt-0">
                     <Button
-                      onClick={() => handleServiceToggle(service.id)}
+                      onClick={() =>
+                        handleServiceToggle(
+                          service.service_id,
+                          service.service_tags
+                        )
+                      }
                       className={`mt-4 px-5 py-2 rounded-lg font-semibold transition-colors duration-200 shadow ${
-                        selectedServices.includes(service.id)
+                        selectedServices.includes(service.service_id)
                           ? "bg-primary text-white hover:bg-primary/90"
                           : "bg-secondary text-foreground hover:bg-primary hover:text-white"
                       }`}
                     >
-                      {selectedServices.includes(service.id)
+                      {selectedServices.includes(service.service_id)
                         ? "Selected"
                         : "Select"}
                     </Button>
@@ -180,10 +207,9 @@ const ViewServiceDetail = () => {
             navigate("/summary", {
               state: {
                 selectedServices,
+                selectedServicestag,
                 selectedDate,
-                services: services.cleaningTypes.map(
-                  ({ icon, ...rest }) => rest
-                ),
+                services: services.map(({ icon, ...rest }) => rest),
               },
             })
           }
@@ -217,9 +243,9 @@ const ViewServiceDetail = () => {
                 <FaArrowLeft className="text-blue-300" />
               </Button>
               <ReviewCard
-                author={reviews[currentReviewIndex].name}
-                review={reviews[currentReviewIndex].review}
-                rating={reviews[currentReviewIndex].rating}
+                author={reviews[currentReviewIndex].username}
+                review={reviews[currentReviewIndex].review_text}
+                rating={reviews[currentReviewIndex].review_score}
               />
               <Button
                 onClick={() =>

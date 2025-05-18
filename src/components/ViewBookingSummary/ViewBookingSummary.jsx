@@ -22,15 +22,19 @@ const ViewBookingSummary = () => {
   const {
     selectedServices = [],
     services = [],
+    selectedTag = [],
     selectedDate = null,
   } = location.state || {};
+  console.log(location.state);
 
+  location.state.selectedServicestag.forEach((tag) => {
+    selectedTag.push(tag[0]);
+  });
   const selectedServiceDetails = services.filter((service) =>
-    selectedServices.includes(service.id)
+    selectedServices.includes(service.service_id)
   );
-
   const totalAmount = selectedServiceDetails.reduce(
-    (sum, service) => sum + service.price,
+    (sum, service) => sum + parseFloat(service.price),
     0
   );
   const handleDownload = () => {
@@ -87,9 +91,9 @@ const ViewBookingSummary = () => {
     });
     if (selectedServiceDetails.length > 0) {
       selectedServiceDetails.forEach((service, index) => {
-        const serviceText = `${index + 1}. ${service.type}`;
-        const priceText = `$${service.price.toFixed(2)}`;
-        const durationText = `(${service.duration} min)`;
+        const serviceText = `${index + 1}. ${selectedTag[index]}`;
+        const priceText = `$${parseFloat(service.price).toFixed(2)}`;
+        const durationText = `( ${service.duration} )`;
 
         doc.setFontSize(12);
         doc.setTextColor(0, 0, 0);
@@ -111,7 +115,7 @@ const ViewBookingSummary = () => {
     doc.setFont("helvetica", "bold");
     doc.setTextColor(0, 128, 0);
     doc.text("Total Amount:", 15, y);
-    doc.text(`$${totalAmount.toFixed(2)}`, pageWidth - 15, y, {
+    doc.text(`$${parseFloat(totalAmount).toFixed(2)}`, pageWidth - 15, y, {
       align: "right",
     });
     doc.setTextColor(0, 0, 0);
@@ -302,21 +306,17 @@ const ViewBookingSummary = () => {
               </Typography>
               {selectedServiceDetails.length > 0 ? (
                 <ul className="divide-y divide-gray-200 border border-gray-200 rounded-md overflow-hidden">
-                  {selectedServiceDetails.map((service) => (
+                  {selectedServiceDetails.map((service, index) => (
                     <li
-                      key={service.id}
+                      key={service.service_id}
                       className="px-4 py-4 hover:bg-gray-50 transition-colors"
                     >
                       <div className="grid grid-cols-5 gap-4 items-center">
-                        {" "}
-                        {/* 5 columns for more control */}
-                        {/* Service Type - takes 3 columns */}
                         <div className="col-span-3">
                           <span className="font-medium text-gray-800 text-md">
-                            {service.type}
+                            {selectedTag[index]}
                           </span>
                         </div>
-                        {/* Duration - takes 1 column, text centered or right */}
                         <div className="col-span-1 text-center text-sm text-gray-600">
                           <span className="flex items-center justify-center">
                             <svg
@@ -334,10 +334,9 @@ const ViewBookingSummary = () => {
                             {service.duration} min
                           </span>
                         </div>
-                        {/* Price - takes 1 column, text right */}
                         <div className="col-span-1 text-right">
                           <span className="text-primary font-semibold text-md">
-                            ${service.price.toFixed(2)}
+                            ${service.price}
                           </span>
                         </div>
                       </div>
@@ -352,9 +351,7 @@ const ViewBookingSummary = () => {
             <section>
               <div className="flex justify-between items-center text-lg font-bold p-4 border border-gray-200 rounded-md">
                 <span className="text-gray-800">Total Amount:</span>
-                <span className="text-green-700">
-                  ${totalAmount.toFixed(2)}
-                </span>
+                <span className="text-green-700">${parseFloat(totalAmount).toFixed(2)}</span>
               </div>
             </section>
 

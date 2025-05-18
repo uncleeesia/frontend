@@ -12,7 +12,7 @@ const ServiceCard = ({
 }) => {
   const navigate = useNavigate();
   const handleClick = () => {
-    navigate(`/service-details?service_id=${id}`);
+    navigate(`/service-details?by_user_id=${id}`);
   };
 
   return (

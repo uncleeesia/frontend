@@ -57,7 +57,7 @@ const ViewHome = () => {
         });
     } else {
       axios
-        .get(`${port}/api/getPreferences?service_id=${user_id}`)
+        .get(`${port}/api/getPreferences?user_id=${user_id}`)
         .then((prefResponse) => {
           setPreferences(prefResponse.data.preferences);
           return JSON.parse(prefResponse.data.preferences);
@@ -183,7 +183,7 @@ const ViewHome = () => {
                   title={services.service_name}
                   content={services.service_description}
                   onClick={() => {
-                    navigate(`/service-details?service_id=${services.service_id}`);
+                    navigate(`/service-details?user_id=${services.by_user_id}`);
                   }}
                 />
               ))}
@@ -205,7 +205,7 @@ const ViewHome = () => {
               <ServiceCard
                 additionalClass="w-90"
                 key={index}
-                id={services.service_id}
+                id={services.by_user_id}
                 title={services.username}
                 description={services.service_description}
                 image="https://placehold.co/600x400"
