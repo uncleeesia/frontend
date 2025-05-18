@@ -2,16 +2,38 @@ import React, { useState } from "react";
 
 const ViewAccountCredential = () => {
   const [profile, setProfile] = useState({
+    password: "",
     retypePassword: "",
-    Password: "",
   });
 
   const handleChange = (e) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
   };
 
+  const validatePassword = (password) => {
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasMinLength = password.length > 10;
+
+    return hasUpperCase && hasLowerCase && hasNumber && hasMinLength;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (profile.password !== profile.retypePassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    if (!validatePassword(profile.password)) {
+      alert(
+        "Password must be more than 10 characters and include at least one uppercase letter, one lowercase letter, and one number."
+      );
+      return;
+    }
+
     console.log("Updated Profile:", profile);
     alert("Password Updated Successfully!");
   };
@@ -35,6 +57,7 @@ const ViewAccountCredential = () => {
               value={profile.password}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2"
+              required
             />
           </div>
 
@@ -44,11 +67,12 @@ const ViewAccountCredential = () => {
               Retype Password:
             </label>
             <input
-              type="retypePassword"
+              type="password"
               name="retypePassword"
               value={profile.retypePassword}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2"
+              required
             />
           </div>
 
