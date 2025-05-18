@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import Typography from "../Common/Typography";
 import Button from "../Common/Button";
 import { FaUserSlash, FaUserCheck } from "react-icons/fa";
+import axios from "axios";
+const port = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
 
 const mockUsers = [
   { id: 1, name: "Alice", email: "alice@example.com", role: "Homeowner", blacklisted: false },
@@ -16,6 +18,8 @@ const ViewBlacklistUser = () => {
   const [reason, setReason] = useState("");
 
   useEffect(() => {
+
+    axios.get(`${port}/api/getUsers?admin=true`)
     setUsers(mockUsers);
   }, []);
 

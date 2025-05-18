@@ -22,20 +22,6 @@ const user_id = localStorage.getItem("user_id");
 // campbellmartin@example.com, P@ssw0rd | user_id 6
 
 const COLORS = ["#34D399", "#60A5FA", "#FBBF24", "#F87171"];
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
 
 function StatCard({ title, value }) {
   return (
@@ -126,7 +112,7 @@ function ViewCleanerStats() {
       .get(`${port}/api/getAllPaymentTransactionByUserId?user_id=${user_id}`)
       .then((res) => {
         const payment = res.data.payment;
-
+        console.log(payment)
         const tagCounts = {};
         payment.forEach((entry) => {
           entry.service_tags.forEach((tag) => {

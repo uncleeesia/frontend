@@ -91,6 +91,8 @@ const ViewHome = () => {
                 );
               }
               setIsLoading(false);
+          console.log(allService);
+
             })
             .catch((error) => {
               console.error("Error fetching data:", error);
@@ -178,7 +180,7 @@ const ViewHome = () => {
                 <Card
                   additionalClass="w-70 mb-5"
                   key={services.service_id}
-                  image="https://placehold.co/600x400"
+                  image={services.picture_url}
                   variant="image"
                   title={services.service_name}
                   content={services.service_description}
