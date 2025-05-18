@@ -57,7 +57,7 @@ const ViewHome = () => {
         });
     } else {
       axios
-        .get(`${port}/api/getPreferences?user_id=${user_id}`)
+        .get(`${port}/api/getPreferences?service_id=${user_id}`)
         .then((prefResponse) => {
           setPreferences(prefResponse.data.preferences);
           return JSON.parse(prefResponse.data.preferences);
