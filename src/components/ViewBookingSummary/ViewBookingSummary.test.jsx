@@ -43,10 +43,11 @@ describe("ViewBookingSummary Component", () => {
     router.useLocation.mockReturnValue({
       state: {
         selectedServices: [1],
-        services: [
-          { id: 1, type: "Bathroom Cleaning", price: 1, duration: 60 },
-        ],
+        selectedServicestag: [["Bathroom Cleaning"]],
         selectedDate: "2025-05-20T14:00:00Z",
+        services: [
+          { service_id: 1, price: "1", duration: "60" },
+        ],
       },
     });
     render(<ViewBookingSummary />);
@@ -59,8 +60,11 @@ describe("ViewBookingSummary Component", () => {
     router.useLocation.mockReturnValue({
       state: {
         selectedServices: [1],
-        services: [{ id: 1, type: "Cleaning", price: 100, duration: 60 }],
+        selectedServicestag: [["Bathroom Cleaning"]],
         selectedDate: "2025-05-20T14:00:00Z",
+        services: [
+          { service_id: 1, price: "1", duration: "60" },
+        ],
       },
     });
 
@@ -77,8 +81,11 @@ describe("ViewBookingSummary Component", () => {
     router.useLocation.mockReturnValue({
       state: {
         selectedServices: [1],
-        services: [{ id: 1, type: "Cleaning", price: 100, duration: 60 }],
+        selectedServicestag: [["Bathroom Cleaning"]],
         selectedDate: "2025-05-20T14:00:00Z",
+        services: [
+          { service_id: 1, price: "1", duration: "60" },
+        ],
       },
     });
 
@@ -89,14 +96,6 @@ describe("ViewBookingSummary Component", () => {
     });
 
     render(<ViewBookingSummary />);
-
-    userEvent.type(screen.getByLabelText(/Cardholder Name/i), "John Doe");
-    userEvent.type(
-      screen.getByLabelText(/Card Number/i),
-      "4111 1111 1111 1111"
-    );
-    userEvent.type(screen.getByLabelText(/Expiry Date/i), "12/30");
-    userEvent.type(screen.getByLabelText(/CVV/i), "123");
 
     const submitBtn = screen.getByRole("button", { name: /submit/i });
     userEvent.click(submitBtn);
