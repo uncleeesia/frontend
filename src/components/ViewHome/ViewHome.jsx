@@ -210,7 +210,7 @@ const ViewHome = () => {
                 id={services.by_user_id}
                 title={services.username}
                 description={services.service_description}
-                image="https://placehold.co/600x400"
+                image={services.picture_url}
               />
             ))
           )}
