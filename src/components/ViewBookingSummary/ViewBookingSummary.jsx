@@ -331,7 +331,7 @@ const ViewBookingSummary = () => {
                                 clipRule="evenodd"
                               />
                             </svg>
-                            {service.duration} min
+                            {service.duration}
                           </span>
                         </div>
                         <div className="col-span-1 text-right">
