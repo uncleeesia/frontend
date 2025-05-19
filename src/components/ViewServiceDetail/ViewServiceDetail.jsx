@@ -29,7 +29,6 @@ const ViewServiceDetail = () => {
       })
       .catch((error) => {
         console.error("Error fetching services:", error);
-        setServices([]);
       });
 
     axios
@@ -63,10 +62,6 @@ const ViewServiceDetail = () => {
       });
   }, [id]);
 
-  if (!services) {
-    return <p>Loading...</p>;
-  }
-
   const handleServiceToggle = (serviceId, serviceTag) => {
     setSelectedServicestag((prev) =>
       prev.includes(serviceTag)
@@ -85,7 +80,7 @@ const ViewServiceDetail = () => {
   };
   const isValidBooking = selectedDate && selectedServices.length > 0;
   return (
-    <div className="min-h-screen bg-background font-inter">
+    !services ? (<div> <p>Loading...</p> </div>) : (<div className="min-h-screen bg-background font-inter">
       {/* Header */}
       <header className="bg-primary py-8">
         <div className="container mx-auto px-4 flex flex-col items-center">
@@ -270,7 +265,7 @@ const ViewServiceDetail = () => {
         <FaComments className="text-2xl" />
       </Button>
     </div>
-  );
+      ));
 };
 
 export default ViewServiceDetail;
