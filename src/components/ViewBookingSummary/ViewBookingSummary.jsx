@@ -260,9 +260,13 @@ const ViewBookingSummary = () => {
     };
 
     axios
-      .post(`${port}/api/postPayment`, JSON.stringify(paymentDetails))
-      .then((response) => response.json())
-      .then((data) => {
+      .post(`${port}/api/postPayment`, paymentDetails, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        const data = response.data; // Axios auto-parses JSON
         setApiMessage(data.message || "Payment successful! Booking confirmed.");
         setIsApiError(false);
         navigate("/");
