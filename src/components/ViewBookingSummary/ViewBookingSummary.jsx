@@ -26,7 +26,6 @@ const ViewBookingSummary = () => {
     selectedTag = [],
     selectedDate = null,
   } = location.state || {};
-  console.log(location.state);
 
   location.state.selectedServicestag.forEach((tag) => {
     selectedTag.push(tag[0]);
@@ -240,25 +239,20 @@ const ViewBookingSummary = () => {
     if (!validatePaymentForm()) {
       return;
     }
-
     setIsSubmittingPayment(true);
-
     const paymentDetails = {
-      cardName: cardName.trim(),
-      cardNumber: cardNumber.replace(/\s/g, ""),
-      expiryDate,
-      cvv,
+      by_user_id:14,
+      to_user_id: selectedServiceDetails[0].by_user_id,
       bookingDetails: {
         services: selectedServiceDetails.map((s) => ({
-          id: s.id,
-          type: s.type,
+          id: s.service_id,
           price: s.price,
         })),
         totalAmount,
         bookingDate: selectedDate ? new Date(selectedDate).toISOString() : null,
       },
     };
-
+    console.log("Payment Details:", paymentDetails);
     axios
       .post(`${port}/api/postPayment`, paymentDetails, {
         headers: {
@@ -266,7 +260,7 @@ const ViewBookingSummary = () => {
         },
       })
       .then((response) => {
-        const data = response.data; // Axios auto-parses JSON
+        const data = response.data;
         setApiMessage(data.message || "Payment successful! Booking confirmed.");
         setIsApiError(false);
         navigate("/");
