@@ -12,6 +12,7 @@ const variantStyles = {
 const Card = ({
   variant = "basic",
   image,
+  type,
   title,
   content,
   onClick,
@@ -34,11 +35,12 @@ const Card = ({
         <img
           src={"./src/assets/" + image}
           alt={title || "Card image"}
-          className="w-full h-100 object-cover"
+          className="w-full h-80 object-cover"
         />
       )}
       <div className={variant === "image" ? "p-4" : ""}>
-        {title && <Typography variant="h3">{title}</Typography>}
+        {type && <Typography variant="h2">{type}</Typography>}
+        {title && <Typography variant="h4">{title}</Typography>}
         {content && <Typography variant="p">{content}</Typography>}
       </div>
     </div>

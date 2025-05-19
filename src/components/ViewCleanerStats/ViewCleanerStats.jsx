@@ -112,7 +112,7 @@ function ViewCleanerStats() {
       .get(`${port}/api/getAllPaymentTransactionByUserId?user_id=${user_id}`)
       .then((res) => {
         const payment = res.data.payment;
-        console.log(payment)
+        console.log(payment);
         const tagCounts = {};
         payment.forEach((entry) => {
           entry.service_tags.forEach((tag) => {
@@ -123,6 +123,13 @@ function ViewCleanerStats() {
           name,
           value,
         }));
+
+        axios
+          .get(`${port}/api/getAllReviewsById?user_id=${user_id}`)
+          .then((res) => {
+            console.log(res.data.reviews);
+          });
+
         setServiceData(result);
 
         const monthOrder = [

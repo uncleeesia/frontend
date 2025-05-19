@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 const ServiceCard = ({
   id,
   title,
+  type,
   price,
   description,
   image,
@@ -25,6 +26,7 @@ const ServiceCard = ({
       <img src={"./src/assets/"+image} alt={title} className="w-full h-70 object-cover" />
       <div className="p-4">
         <div className="flex justify-between items-center mb-2">
+          <h4 className="text-lg font-bold">{type}</h4>
           <h3 className="text-lg font-heading">{title}</h3>
           {price ? (
             <span className="text-primary font-bold">${price}/hr</span>

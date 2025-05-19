@@ -85,14 +85,10 @@ const ViewHome = () => {
               } else if (prefResponse.id) {
                 setShowPreferences(false);
                 setPreferences(prefResponse);
-                searchPreferenceService(
-                  prefResponse,
-                  allService
-                );
+                searchPreferenceService(prefResponse, allService);
               }
               setIsLoading(false);
-          console.log(allService);
-
+              console.log(allService);
             })
             .catch((error) => {
               console.error("Error fetching data:", error);
@@ -110,8 +106,7 @@ const ViewHome = () => {
         const cleaningTypeMatch =
           (!preferences.HouseCleaning ||
             service.cleaningTypes.includes("House")) &&
-          (!preferences.CarCleaning ||
-            service.cleaningTypes.includes("Car")) &&
+          (!preferences.CarCleaning || service.cleaningTypes.includes("Car")) &&
           (!preferences.BathroomCleaning ||
             service.cleaningTypes.includes("Bathroom")) &&
           (!preferences.WindowCleaning ||
@@ -152,7 +147,7 @@ const ViewHome = () => {
 
     const matchedServices = allServiceProvider.filter((service) => {
       setIsLoading(false);
-      return service.name
+      return service.service_tags[0]
         .toLowerCase()
         .includes(query.target.value.toLowerCase());
     });
@@ -180,12 +175,15 @@ const ViewHome = () => {
                 <Card
                   additionalClass="w-60 mb-5"
                   key={services.service_id}
+                  type={services.service_tags[0]}
                   image={services.picture_url}
                   variant="image"
                   title={services.service_name}
                   content={services.service_description}
                   onClick={() => {
-                    navigate(`/service-details?by_user_id=${services.by_user_id}`);
+                    navigate(
+                      `/service-details?by_user_id=${services.by_user_id}`
+                    );
                   }}
                 />
               ))}
@@ -199,15 +197,16 @@ const ViewHome = () => {
         All Service Provider
       </Typography>
       <div className="flex justify-center">
-        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-40">
+        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-30">
           {isloading ? (
             <p>Loading...</p>
           ) : (
-            filteredServices.map((services,index) => (
+            filteredServices.map((services, index) => (
               <ServiceCard
                 additionalClass="w-90"
                 key={index}
                 id={services.by_user_id}
+                type={services.service_tags[0]}
                 title={services.username}
                 description={services.service_description}
                 image={services.picture_url}
