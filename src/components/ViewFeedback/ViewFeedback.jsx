@@ -25,14 +25,19 @@ const Feedback = () => {
   };
 
   const handleSubmit = (event) => {
+    event.preventDefault();
     axios
       .post(
         `${port}/api/postFeedback`,
         JSON.stringify({
           feedback: feedbackText,
-          username: isAnonymous ? "Anonymous" : username,
-          contactNumber: isAnonymous ? "Not Provided" : contactNumber,
-        })
+          username: isAnonymous ? null : username,
+          contactNumber: isAnonymous ? null : contactNumber,
+        }),{
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       )
       .then((response) => {
         console.log("Feedback submitted successfully:", response.data);
