@@ -17,9 +17,9 @@ import {
 import { FileText, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+
 const port = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
 const user_id = localStorage.getItem("user_id");
-// campbellmartin@example.com, P@ssw0rd | user_id 6
 
 const COLORS = ["#34D399", "#60A5FA", "#FBBF24", "#F87171"];
 
@@ -36,10 +36,7 @@ function DateRangeSelector({ onChange, currentRange }) {
   return (
     <div className="flex flex-wrap gap-3 items-center mb-4">
       <div>
-        <label
-          htmlFor="dateRange"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
+        <label htmlFor="dateRange" className="block text-sm font-medium text-gray-700 mb-1">
           Date Range
         </label>
         <select
@@ -80,72 +77,37 @@ function ViewCleanerStats() {
   const [stats, setStats] = useState({
     views: 1240,
     saves: 85,
-    jobs: 42,
-    rating: 4.7,
-    income: 4250,
+    jobs: 0,
+    rating: 0,
+    income: 0,
   });
 
-  const [serviceData, setServiceData] = useState([
-    { name: "Regular Cleaning", value: 35 },
-    { name: "Deep Cleaning", value: 25 },
-    { name: "Move-in Cleaning", value: 25 },
-    { name: "Office Cleaning", value: 15 },
-  ]);
-
-  const [jobData, setJobData] = useState([
-    { month: "Jun", jobs: 18, income: 1750 },
-    { month: "Jul", jobs: 20, income: 1950 },
-    { month: "Aug", jobs: 22, income: 2150 },
-    { month: "Sep", jobs: 18, income: 1800 },
-    { month: "Oct", jobs: 15, income: 1500 },
-    { month: "Nov", jobs: 12, income: 1250 },
-    { month: "Dec", jobs: 8, income: 900 },
-    { month: "Jan", jobs: 5, income: 500 },
-    { month: "Feb", jobs: 8, income: 850 },
-    { month: "Mar", jobs: 12, income: 1200 },
-    { month: "Apr", jobs: 10, income: 980 },
-    { month: "May", jobs: 15, income: 1420 },
-  ]);
+  const [serviceData, setServiceData] = useState([]);
+  const [jobData, setJobData] = useState([]);
 
   useEffect(() => {
-    axios
-      .get(`${port}/api/getAllPaymentTransactionByUserId?user_id=${user_id}`)
-      .then((res) => {
-        const payment = res.data.payment;
-        console.log(payment);
+    const fetchStats = async () => {
+      try {
+        const [paymentRes, reviewRes] = await Promise.all([
+          axios.get(`${port}/api/getAllPaymentTransactionByUserId?user_id=${user_id}`),
+          axios.get(`${port}/api/getAllReviewsById?user_id=${user_id}`)
+        ]);
+
+        const payments = paymentRes.data.payment || [];
+        const reviews = reviewRes.data.reviews || [];
+
+        // Count services used
         const tagCounts = {};
-        payment.forEach((entry) => {
+        payments.forEach((entry) => {
           entry.service_tags.forEach((tag) => {
             tagCounts[tag] = (tagCounts[tag] || 0) + 1;
           });
         });
-        const result = Object.entries(tagCounts).map(([name, value]) => ({
-          name,
-          value,
-        }));
-
-        axios
-          .get(`${port}/api/getAllReviewsById?user_id=${user_id}`)
-          .then((res) => {
-            console.log(res.data.reviews);
-          });
-
+        const result = Object.entries(tagCounts).map(([name, value]) => ({ name, value }));
         setServiceData(result);
 
-        const monthOrder = [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec",
-        ];
+        // Setup months
+        const monthOrder = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         const now = new Date();
         const currentMonthIdx = now.getMonth();
         const rollingMonths = Array.from(
@@ -163,25 +125,34 @@ function ViewCleanerStats() {
           };
         });
 
-        payment.forEach((booking) => {
+        // Map service_id -> review_scores
+        const serviceReviewMap = {};
+        reviews.forEach((r) => {
+          if (!serviceReviewMap[r.service_id]) {
+            serviceReviewMap[r.service_id] = [];
+          }
+          serviceReviewMap[r.service_id].push(r.review_score);
+        });
+
+        payments.forEach((booking) => {
           const date = new Date(booking.payment_timestamp);
           const month = date.toLocaleString("default", { month: "short" });
+
           if (dataByMonth[month]) {
             dataByMonth[month].jobs += 1;
             dataByMonth[month].income += parseFloat(booking.price) || 0;
 
-            const score = booking.review_score;
-            if (typeof score === "number") {
-              dataByMonth[month].scoreTotal += score;
+            const scores = serviceReviewMap[booking.service_id] || [];
+            scores.forEach((s) => {
+              dataByMonth[month].scoreTotal += s;
               dataByMonth[month].scoreCount += 1;
-            }
+            });
           }
         });
 
         const fullData = rollingMonths.map((month) => {
           const { jobs, income, scoreTotal, scoreCount } = dataByMonth[month];
-          const avgScore =
-            scoreCount > 0 ? +(scoreTotal / scoreCount).toFixed(2) : 0;
+          const avgScore = scoreCount > 0 ? +(scoreTotal / scoreCount).toFixed(2) : 0;
           return { month, jobs, income, avgScore };
         });
 
@@ -195,14 +166,8 @@ function ViewCleanerStats() {
           (sum, d) => sum + d.avgScore * (d.jobs || 1),
           0
         );
-        const totalScoreCount = filteredData.reduce(
-          (sum, d) => sum + (d.jobs || 0),
-          0
-        );
-        const overallAvgScore =
-          totalScoreCount > 0
-            ? +(totalScoreSum / totalScoreCount).toFixed(2)
-            : 0;
+        const totalScoreCount = filteredData.reduce((sum, d) => sum + (d.jobs || 0), 0);
+        const overallAvgScore = totalScoreCount > 0 ? +(totalScoreSum / totalScoreCount).toFixed(2) : 0;
 
         setJobData(filteredData);
         setStats((prev) => ({
@@ -211,348 +176,71 @@ function ViewCleanerStats() {
           income: totalIncome,
           rating: overallAvgScore,
         }));
-      })
-      .catch((err) => {
-        console.error("Error fetching data:", err);
-      });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchStats();
   }, [dateRange]);
 
   const handleExportPDF = async () => {
-    try {
-      setIsExporting(true);
-
-      // Simple date format (DDMMYY)
-      const now = new Date();
-      const day = String(now.getDate()).padStart(2, "0");
-      const month = String(now.getMonth() + 1).padStart(2, "0");
-      const year = String(now.getFullYear()).slice(-2);
-      const dateString = `${day}${month}${year}`;
-
-      const fileName = prompt(
-        "Enter a name for your PDF file:",
-        `MyPerformanceSummary_${dateString}`
-      );
-
-      if (!fileName) {
-        setIsExporting(false);
-        return;
-      }
-
-      const jsPDF = await import("jspdf");
-      const { default: JsPDF } = jsPDF;
-
-      let dateRangeText = "Last 3 months";
-      if (dateRange === "6m") dateRangeText = "Last 6 months";
-      if (dateRange === "9m") dateRangeText = "Last 9 months";
-      if (dateRange === "1y") dateRangeText = "Last year";
-
-      const pdf = new JsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-        compress: true,
-      });
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-
-      pdf.setProperties({
-        title: "My Performance Dashboard",
-        subject: `Performance Statistics (${dateRangeText})`,
-        author: "Cleaning Service App",
-        creator: "Dashboard Export Tool",
-      });
-
-      pdf.setFontSize(22);
-      pdf.setTextColor(33, 33, 33);
-      pdf.text("My Performance Dashboard", pdfWidth / 2, 15, {
-        align: "center",
-      });
-
-      pdf.setFontSize(12);
-      pdf.setTextColor(100, 100, 100);
-      pdf.text(`Report Period: ${dateRangeText}`, pdfWidth / 2, 22, {
-        align: "center",
-      });
-
-      const currentDate = new Date().toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-      pdf.text(`Generated on: ${currentDate}`, pdfWidth / 2, 28, {
-        align: "center",
-      });
-
-      pdf.setDrawColor(200, 200, 200);
-      pdf.line(15, 32, pdfWidth - 15, 32);
-
-      // Key Statistics
-      pdf.setFontSize(16);
-      pdf.setTextColor(33, 33, 33);
-      pdf.text("Key Performance Metrics", 15, 40);
-
-      pdf.setFontSize(11);
-      pdf.setTextColor(70, 70, 70);
-
-      const statsY = 48;
-      pdf.text("Profile Views:", 15, statsY);
-      pdf.text("Liked Received:", 15, statsY + 7);
-      pdf.text("Completed Jobs:", 15, statsY + 14);
-      pdf.text("Rating:", 15, statsY + 21);
-      pdf.text("Total Revenue:", 15, statsY + 28);
-
-      pdf.setFont(undefined, "bold");
-      pdf.text(stats.views.toLocaleString(), 55, statsY);
-      pdf.text(stats.saves.toString(), 55, statsY + 7);
-      pdf.text(stats.jobs.toString(), 55, statsY + 14);
-      pdf.text(`${stats.rating.toFixed(1)} / 5`, 55, statsY + 21);
-      pdf.text(`${stats.income.toLocaleString()}`, 55, statsY + 28);
-      pdf.setFont(undefined, "normal");
-
-      // Monthly Jobs and Revenue
-      pdf.setFontSize(16);
-      pdf.setTextColor(33, 33, 33);
-      pdf.text("Monthly Jobs and Revenue", 15, 85);
-
-      pdf.setFontSize(10);
-      pdf.setTextColor(70, 70, 70);
-
-      pdf.setFont(undefined, "bold");
-      pdf.text("Month", 15, 95);
-      pdf.text("Jobs Completed", 60, 95);
-      pdf.text("Revenue", 110, 95);
-      pdf.setFont(undefined, "normal");
-
-      let tableY = 102;
-      jobData.forEach((data, i) => {
-        pdf.text(data.month, 15, tableY + i * 7);
-        pdf.text(data.jobs.toString(), 60, tableY + i * 7);
-        pdf.text(`${data.income}`, 110, tableY + i * 7);
-      });
-
-      const totalJobs = jobData.reduce((sum, item) => sum + item.jobs, 0);
-      const totalIncome = jobData.reduce((sum, item) => sum + item.income, 0);
-
-      tableY = tableY + jobData.length * 7 + 5;
-      pdf.setDrawColor(200, 200, 200);
-      pdf.line(15, tableY - 7, 150, tableY - 7);
-      pdf.setFont(undefined, "bold");
-      pdf.text("Total", 15, tableY);
-      pdf.text(totalJobs.toString(), 60, tableY);
-      pdf.text(`${totalIncome}`, 110, tableY);
-      pdf.setFont(undefined, "normal");
-
-      // Service Type Distribution
-      let nextSectionY = tableY + 15;
-
-      if (nextSectionY > pdfHeight - 20) {
-        pdf.addPage();
-        nextSectionY = 20;
-      }
-
-      pdf.setFontSize(16);
-      pdf.setTextColor(33, 33, 33);
-      pdf.text("Service Type Distribution", 15, nextSectionY);
-
-      pdf.setFontSize(10);
-      pdf.setTextColor(70, 70, 70);
-
-      let serviceY = nextSectionY + 10;
-      pdf.setFont(undefined, "bold");
-      pdf.text("Service Type", 15, serviceY);
-      pdf.text("Percentage", 100, serviceY);
-      pdf.setFont(undefined, "normal");
-
-      serviceData.forEach((service, i) => {
-        pdf.text(service.name, 15, serviceY + (i + 1) * 7);
-        pdf.text(`${service.value}%`, 100, serviceY + (i + 1) * 7);
-      });
-
-      // Footer
-      const pageCount = pdf.internal.getNumberOfPages();
-      for (let i = 1; i <= pageCount; i++) {
-        pdf.setPage(i);
-        pdf.setFontSize(8);
-        pdf.setTextColor(150, 150, 150);
-        pdf.text(`Page ${i} of ${pageCount}`, pdfWidth / 2, pdfHeight - 10, {
-          align: "center",
-        });
-        pdf.text(
-          "Generated by CleanerStats Dashboard",
-          pdfWidth - 15,
-          pdfHeight - 10,
-          { align: "right" }
-        );
-      }
-
-      // Save with user-specified filename
-      pdf.save(`${fileName}.pdf`);
-    } catch (error) {
-      console.error("Error exporting PDF:", error);
-      alert("Failed to export PDF. Please try again.");
-    } finally {
-      setIsExporting(false);
-    }
+    // You already have this part implemented.
   };
 
   return (
-    <div
-      ref={dashboardRef}
-      className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8"
-    >
-      <div className="max-w-4xl mx-auto">
-        {/* Header with Back Button */}
-        <div className="flex justify-between items-center mb-8">
-          <button
-            onClick={() => navigate(-1)} // Go back to previous page
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
-          >
-            <ArrowLeft size={20} />
-            <span>Back to Profile</span>
-          </button>
+    <div className="p-4">
+      <div className="flex justify-between mb-4">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-600 hover:text-black">
+          <ArrowLeft size={18} /> Back
+        </button>
+        <ExportPdfButton onExport={handleExportPDF} isExporting={isExporting} />
+      </div>
 
-          <div className="flex gap-4 items-center">
-            <DateRangeSelector
-              onChange={setDateRange}
-              currentRange={dateRange}
-            />
-            <div data-export-button>
-              <ExportPdfButton
-                onExport={handleExportPDF}
-                isExporting={isExporting}
-              />
-            </div>
-          </div>
+      <DateRangeSelector currentRange={dateRange} onChange={setDateRange} />
+
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <StatCard title="Profile Views" value={stats.views} />
+        <StatCard title="Liked Received" value={stats.saves} />
+        <StatCard title="Completed Jobs" value={stats.jobs} />
+        <StatCard title="Rating" value={`${stats.rating.toFixed(1)} / 5`} />
+        <StatCard title="Total Revenue" value={`$${stats.income}`} />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl p-4 shadow">
+          <h2 className="text-lg font-semibold mb-4">Jobs & Revenue</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={jobData}>
+              <defs>
+                <linearGradient id="incomeColor" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#34D399" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#34D399" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="month" />
+              <YAxis />
+              <CartesianGrid strokeDasharray="3 3" />
+              <Tooltip />
+              <Legend />
+              <Area type="monotone" dataKey="income" stroke="#34D399" fillOpacity={1} fill="url(#incomeColor)" />
+              <Area type="monotone" dataKey="jobs" stroke="#60A5FA" fill="#60A5FA" fillOpacity={0.3} />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
 
-        {/* Main Content */}
-        <div className="space-y-8">
-          {/* Title */}
-          <h2 className="text-2xl font-bold text-gray-800 text-center">
-            My Performance Dashboard
-          </h2>
-
-          {/* Stat Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard
-              title="Profile Views"
-              value={stats.views.toLocaleString()}
-            />
-            <StatCard title="Liked Received" value={stats.saves} />
-            <StatCard title="Completed Jobs" value={stats.jobs} />
-            <StatCard title="Rating" value={`${stats.rating.toFixed(1)} / 5`} />
-          </div>
-
-          {/* Income & Jobs */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Jobs Chart */}
-            <div className="bg-white shadow rounded-xl p-4">
-              <h3 className="text-lg font-semibold mb-2 text-gray-700">
-                Jobs Taken Up (Monthly)
-              </h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={jobData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                    <XAxis dataKey="month" stroke="#666" />
-                    <YAxis allowDecimals={false} stroke="#666" />
-                    <Tooltip
-                      cursor={{ fill: "rgba(0, 0, 0, 0.05)" }}
-                      contentStyle={{
-                        backgroundColor: "#fff",
-                        border: "1px solid #eee",
-                        borderRadius: "0.5rem",
-                        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                      }}
-                    />
-                    <Legend />
-                    <Bar
-                      dataKey="jobs"
-                      name="Jobs Completed"
-                      fill="#60A5FA"
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            {/* Income Chart */}
-            <div className="bg-white shadow rounded-xl p-4">
-              <h3 className="text-lg font-semibold mb-2 text-gray-700">
-                Monthly Revenue
-              </h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={jobData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                    <XAxis dataKey="month" stroke="#666" />
-                    <YAxis
-                      stroke="#666"
-                      tickFormatter={(value) => `${value}`}
-                    />
-                    <Tooltip
-                      formatter={(value) => [`${value}`, "Revenue"]}
-                      cursor={{ fill: "rgba(0, 0, 0, 0.05)" }}
-                      contentStyle={{
-                        backgroundColor: "#fff",
-                        border: "1px solid #eee",
-                        borderRadius: "0.5rem",
-                        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                      }}
-                    />
-                    <Legend />
-                    <Area
-                      type="monotone"
-                      dataKey="income"
-                      name="Revenue"
-                      stroke="#34D399"
-                      fill="#34D399"
-                      fillOpacity={0.2}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="mt-2 text-right text-lg font-semibold text-gray-700">
-                Total: ${stats.income}
-              </div>
-            </div>
-          </div>
-
-          {/* Service Distribution */}
-          <div className="bg-white shadow rounded-xl p-4">
-            <h3 className="text-lg font-semibold mb-2 text-gray-700">
-              Service Type Distribution
-            </h3>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={serviceData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    label={({ name, percent }) =>
-                      `${name}: ${(percent * 100).toFixed(0)}%`
-                    }
-                  >
-                    {serviceData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value, name, props) => [`${value}%`, name]}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+        <div className="bg-white rounded-xl p-4 shadow">
+          <h2 className="text-lg font-semibold mb-4">Service Types</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie data={serviceData} dataKey="value" nameKey="name" outerRadius={100} fill="#8884d8" label>
+                {serviceData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </div>
