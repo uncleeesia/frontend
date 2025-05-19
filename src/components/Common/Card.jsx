@@ -33,7 +33,7 @@ const Card = ({
     <div className={rootClasses} {...clickableProps}>
       {variant === "image" && image && (
         <img
-          src={"./src/assets/" + image}
+          src={"public/src/assets/" + image}
           alt={title || "Card image"}
           className="w-full h-80 object-cover"
         />
