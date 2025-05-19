@@ -11,7 +11,7 @@ const Feedback = () => {
   const [contactNumber, setContactNumber] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
   const navigate = useNavigate();
-  
+
   const handleInputChange = (event) => {
     setFeedbackText(event.target.value);
   };
@@ -29,11 +29,12 @@ const Feedback = () => {
     axios
       .post(
         `${port}/api/postFeedback`,
-        JSON.stringify({
+        {
           feedback: feedbackText,
           username: isAnonymous ? null : username,
           contactNumber: isAnonymous ? null : contactNumber,
-        }),{
+        },
+        {
           headers: {
             "Content-Type": "application/json",
           },
