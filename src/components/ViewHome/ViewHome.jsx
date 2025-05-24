@@ -58,11 +58,13 @@ const ViewHome = () => {
     } else {
       axios
         .get(`${port}/api/getPreferences?user_id=${user_id}`)
+        .then((prefResponse) => prefResponse.data.preferences)
         .then((prefResponse) => {
-          setPreferences(prefResponse.data.preferences);
-          return JSON.parse(prefResponse.data.preferences);
-        })
-        .then((prefResponse) => {
+          if (prefResponse.length > 0) setPreferences(prefResponse);
+          else{
+            setPreferences(localStorage.getItem("preferences"));
+            setShowPreferences(false);
+          }
           axios
             .get(`${port}/api/getServiceProviders`)
             .then((response) => {
@@ -128,6 +130,7 @@ const ViewHome = () => {
 
   const handleSavePreferences = (_preferences) => {
     setShowPreferences(false);
+    localStorage.setItem("preferences", JSON.stringify(_preferences));
     searchPreferenceService(_preferences, allServiceProvider);
     axios
       .post(`${port}/api/UpdatePreferences`, {
@@ -158,12 +161,16 @@ const ViewHome = () => {
     <p>Loading...</p>
   ) : (
     <div className="p-20">
-      <Modal
-        isOpen={showPreferences}
-        onClose={() => setShowPreferences(false)}
-        onSave={handleSavePreferences}
-        preferences={preferences}
-      />
+      {!localStorage.getItem("preferences") ? (
+        <Modal
+          isOpen={showPreferences}
+          onClose={() => setShowPreferences(false)}
+          onSave={handleSavePreferences}
+          preferences={preferences}
+        />
+      ) : (
+        ""
+      )}
       <Typography variant="h1">Welcome to the Cleaning Service App</Typography>
       <Input type="search" placeholder="Search..." onChange={handleSearch} />
       {preferredServices.length > 0 ? (
