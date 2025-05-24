@@ -161,7 +161,7 @@ const ViewHome = () => {
     <p>Loading...</p>
   ) : (
     <div className="p-20">
-      {!localStorage.getItem("preferences") ? (
+      {localStorage.getItem("preferences") == null? (
         <Modal
           isOpen={showPreferences}
           onClose={() => setShowPreferences(false)}
